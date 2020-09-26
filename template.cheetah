@@ -1,0 +1,10 @@
+\documentclass{article}
+\usepackage{amsmath}
+\title{Assignment $assignment_name \\ Student ID $student_id}
+\begin{document}
+\maketitle
+\section{} 
+
+$problems
+
+\end{document}
