@@ -16,11 +16,16 @@ class Assignment():
         self.title = title
 
     def rng(self,num_problems,min_difficulty=0,max_difficulty=100000): 
-        #todo: support rng under constraint, e.g., minimum cumulative difficulty
-        s = r.choice(self.problems, num_problems, replace = False) 
-        while ( sum(x.points for x in s) > max_difficulty | sum(x.points for x in s) < min_difficulty ):
-            s = r.choice(self.problems, num_problems, replace = False)
-        return s
+
+        self.subset = r.choice(self.problems, 
+                num_problems, 
+                replace = False) 
+        while ( sum(x.points for x in self.subset) > max_difficulty |\
+                sum(x.points for x in self.subset) < min_difficulty ):
+            self.subset = r.choice(self.problems, 
+                    num_problems,
+                    replace = False)
+        return self.subset
 
 
 
@@ -42,8 +47,6 @@ class Problem():
     difficulty: Difficulty on a numerical scale (could be easily changed to have star ratings)
     references: Dictionary of references with key as defined in text format and value as the bibtex reference
     """
-
-    header = 'Difficulty={0}\n\nNumber Points={1}'
 
     def __init__(
             self,
@@ -84,7 +87,9 @@ class Problem():
             self.dct[self.outputs[c]] = y
 
         # now add extraneous inputs
-        self.dct = {**self.dct,**{v.name:v.rng() for v in self.extraneous_inputs}}
+        self.dct = {**self.dct,
+                **{v.name:v.rng() for v in self.extraneous_inputs}}
+        return self.dct
 
 
 class Variable():
@@ -96,12 +101,14 @@ class Variable():
         self.name = name
         self.lb = lb
         self.ub = ub
-        self.size = None
+        self.size = size
 
 class Integer(Variable):
     def rng(self):
-        return r.randint(self.lb, self.ub, size=self.size)
+        self.value = r.randint(self.lb, self.ub, size=self.size)
+        return self.value
 
 class Float(Variable):
     def rng(self):
-        return r.random(size=self.size)*(self.ub - self.lb) + self.lb
+        self.value = r.random(size=self.size)*(self.ub - self.lb) + self.lb
+        return self.value
