@@ -3,8 +3,19 @@
 \title{Assignment $assignment_name \\ Student ID $student_id}
 \begin{document}
 \maketitle
-\section{} 
 
-$problems
+#for $p in $problems
+\section{$p.title}
+Difficulty = $p.difficulty
+Number Points = $p.points
+\subsection{Problem}
+$p.statement.format_map($p.dct)
+#if $is_soln is True
+\subsection{Solution}
+$p.solution.format_map($p.dct)
+#else
+\vspace{$p.vspace$p.vspace_unit} ## note \vspace $p.vspace$p.vspace_unit will fail
+#end if
+#end for
 
 \end{document}

@@ -15,19 +15,21 @@ for n in range(3): # number of students
     st_s = ''
     for prob in probs:
         prob.rng()
-        st_a += prob.format_assignment()
-        st_s += prob.format_solution()
+#        st_a += prob.format_assignment()
+#        st_s += prob.format_solution()
 
     with open(name_a, 'w') as _:
         ass = tclass(assignment_name=A01.title,
                 student_id=n,
-                problems=st_a)
+                problems=probs,
+                is_soln=False)
         _.write(ass.respond())
 
     with open(name_s, 'w') as _:
         soln = tclass(assignment_name=A01.title,
                 student_id=n,
-                problems=st_s)
+                problems=probs,
+                is_soln=True)
         _.write(soln.respond())
 
     subprocess.run(['pdflatex', '-output-directory=out', name_a])

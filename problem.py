@@ -56,7 +56,9 @@ class Problem():
             outputs,
             solver,
             solution,
-            references=None):
+            references=None,
+            vspace=6,
+            vspace_unit='cm'):
 
         self.title = title
         self.statement = statement
@@ -67,7 +69,10 @@ class Problem():
         self.outputs = outputs
         self.solver = solver
         self.solution = solution
+
         self.references = references
+        self.vspace = vspace
+        self.vspace_unit = vspace_unit
 
         self.dof = len(self.inputs)
 
@@ -81,16 +86,6 @@ class Problem():
         # now add extraneous inputs
         self.dct = {**self.dct,**{v.name:v.rng() for v in self.extraneous_inputs}}
 
-    def format_assignment(self):
-        statement = self.statement.format_map(self.dct)
-        return '\subsection{{{2}}}\n\n{0}\n\n{1}'.format(
-            self.header.format(self.difficulty, self.points), statement, self.title)
-
-    def format_solution(self):
-        assignment = self.format_assignment()
-        solution = self.solution.format_map(self.dct)
-        return '{0}\n\n\subsubsection{{Solution}}\n\n{1}'.format(
-            assignment, solution)
 
 class Variable():
     def __init__(self,
