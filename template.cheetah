@@ -1,3 +1,20 @@
+#def texfmt($arraylike)
+#if 'ndarray' in str(type($arraylike))
+\begin{pmatrix}
+#if len($arraylike.shape) == 1
+#echo '\\\\'.join(str(x) for x in $arraylike)
+#elif len($arraylike.shape) == 2
+#for $row in $arraylike
+#echo '&'.join(str(x) for x in $row) + '\\\\'
+#end for
+#end if
+\end{pmatrix}
+#else
+$arraylike
+#end if
+#end def
+
+
 \documentclass{article}
 \usepackage{amsmath}
 \title{Assignment $assignment_name \\ Student ID $student_id}
@@ -9,12 +26,13 @@
 Difficulty = $p.difficulty
 Number Points = $p.points
 \subsection{Problem}
-$p.statement.format_map($p.dct)
+$p.statement.format_map({**$p.dct, **{$k + '_autofmt':$texfmt(v) for k,v in $p.dct.items()}})
 #if $is_soln is True
 \subsection{Solution}
-$p.solution.format_map($p.dct)
+$p.solution.format_map({**$p.dct, **{$k + '_autofmt':$texfmt(v) for k,v in $p.dct.items()}})
 #else
-\vspace{$p.vspace$p.vspace_unit} ## note \vspace $p.vspace$p.vspace_unit will fail
+\vspace{$p.vspace$p.vspace_unit} 
+## note \vspace $p.vspace$p.vspace_unit will fail
 #end if
 #end for
 
