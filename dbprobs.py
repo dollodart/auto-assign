@@ -1,4 +1,4 @@
-from problem import Assignment, Problem, Float, Integer
+from problem import Assignment, Problem, Float, Integer, Constant
 # there is a subtle difference between init setting and having the variable be set in the class definition
 # all solvers must return iterables
 # the order of outputs strings must match the order the solver outputs
@@ -94,5 +94,22 @@ P06 = Problem(title = 'Sum Along Several Columns Cumulatively',
         outputs = ('w',),
         solution = 'The cumulative sum is $$\\text{{cumsum}}({x_autofmt}) = {w_autofmt}\,.$$'
         )
+
+def solver(t,g):
+    x = g*t**2/2
+    return '{:.3E}'.format(x),
+
+P07 = Problem(title = 'Acceleration for an Object Starting at Rest',
+        statement = 'An object is released from rest from someones hand at the top of a building.' 
+        ' Before it hits the ground, it travels ${t}$ seconds.'
+        ' How far has it traveled? The local graviational constant is ${g}$ m$^2$/s',
+        difficulty = 'easy',
+        points = 2,
+        inputs = (Float('t',0.5,1.5), Constant('g',9.81)),
+        extraneous_inputs = tuple(),
+        solver=solver,
+        outputs=('x',),
+        solution= 'After ${t}$ seconds the object has fallen ${x}$ meters.'
+        )
 #A01 = Assignment( (P01,P02,P03,P04), title='Arithmetic Operations')
-A01 = Assignment( (P05,P06,P02), title='Several Arithmetic Operations')
+A01 = Assignment( (P05,P06,P07), title='Several Arithmetic Operations')

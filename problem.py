@@ -91,6 +91,14 @@ class Problem():
                 **{v.name:v.rng() for v in self.extraneous_inputs}}
         return self.dct
 
+class Constant():
+    def __init__(self,
+            name,
+            value):
+        self.name = name
+        self.value = value
+    def rng(self):
+        return self.value
 
 class Variable():
     def __init__(self,
@@ -109,6 +117,15 @@ class Integer(Variable):
         return self.value
 
 class Float(Variable):
+    def __init__(self,
+            name,
+            lb,
+            ub,
+            size=None,
+            precision=3):
+        super().__init__(name,lb,ub,size)
+        self.precision = precision
+
     def rng(self):
-        self.value = r.random(size=self.size)*(self.ub - self.lb) + self.lb
+        self.value = round(r.random(size=self.size), self.precision)*(self.ub - self.lb) + self.lb
         return self.value
