@@ -1,4 +1,4 @@
-from problem import Assignment, Problem, Float, Integer, Constant
+from problem import Assignment, Problem, Float, Integer, Constant, Unit
 # there is a subtle difference between init setting and having the variable be set in the class definition
 # all solvers must return iterables
 # the order of outputs strings must match the order the solver outputs
@@ -101,15 +101,15 @@ def solver(t,g):
 
 P07 = Problem(title = 'Acceleration for an Object Starting at Rest',
         statement = 'An object is released from rest from someones hand at the top of a building.' 
-        ' Before it hits the ground, it travels ${t.value}$ seconds.'
-        ' How far has it traveled? The local graviational constant is ${g.value}$ m$^2$/s',
+        ' Before it hits the ground, it travels ${t.value}$ {t.unit.value}.'
+        ' How far has it traveled? The local graviational constant is ${g.value}$ {g.unit.value}',
         difficulty = 'easy',
         points = 2,
-        inputs = (Float('t',0.5,1.5), Constant('g',9.81)),
+        inputs = (Float('t',0.5,1.5,unit=Unit(('s',))), Constant('g',9.81,Unit(('m/s**2',)))),
         extraneous_inputs = tuple(),
         solver=solver,
         outputs=('x',),
-        solution= 'After ${t.value}$ seconds the object has fallen ${x.value}$ meters.'
+        solution= 'After ${t.value}$ {t.unit.value} the object has fallen ${x.value}$ meters.'
         )
 #A01 = Assignment( (P01,P02,P03,P04), title='Arithmetic Operations')
 A01 = Assignment( (P05,P06,P07), title='Several Arithmetic Operations')
