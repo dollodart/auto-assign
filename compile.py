@@ -9,7 +9,7 @@ with open('template.cheetah','r') as _:
 
 A01.rng(3) # 3 problems
 
-for n in range(1): # number of students
+for n in range(3): # number of students
     name_a = f'out/id-{n}.tex'
     name_s = f'out/soln-id-{n}.tex'
     st_a = ''

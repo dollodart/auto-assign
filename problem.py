@@ -1,12 +1,4 @@
 import numpy.random as r
-from quantities import Quantity as qQuantity
-from quantities.quantity import get_conversion_factor
-
-class Quantity(qQuantity):
-    def __str__(self):
-        return str(self.magnitude)
-    def __repr__(self):
-        return self.__str__()
 
 class Assignment():
     """
@@ -41,8 +33,10 @@ class Assignment():
 
 
 
-class Problem(): 
-    """ Class attributes:
+class Problem():
+    """
+    Class attributes:
+
     title: Problem title
     points: Number of points the problem is worth
     solution: The unformatted solution text.
@@ -105,44 +99,13 @@ class Problem():
         for v in self.inputs:
             yield v
 
-
-class Unit():
-    """Units should be an interable, not a set data structure (e.g., tuple or list)."""
-    def __init__(self,
-            unit_set):
-        self.unit_set = unit_set
-
-#    @classmethod
-#    def from_dimensionality(cls, dimensionality):
-#        #look up all units for that dimensionality
-#        #... 
-#        #ensure the SI unit is the first one given, since this is assumed the value 
-#        return cls(unit_set)
-
-    def rng(self):
-        self.value = r.choice(self.unit_set)
-        self.conversion_factor = get_conversion_factor(Quantity(1,self.unit_set[0]), Quantity(1,self.value))
-        # from, to convention
-        # the float range is specified in the first unit provided in the unit "set" (where order actually matters)
-
-    def __str__(self):
-        return Quantity(1,self.value).dimensionality.latex
-
-    def __repr__(self):
-        return self.__str__()
-
 class Constant():
     def __init__(self,
             name,
-            value,
-            unit=Unit(('',))):
+            value):
         self.name = name
         self.value = value
-        self.unit = unit
     def rng(self):
-        self.unit.rng() #to be consistent, this should support randomizing units like variables
-        self.value = Quantity(self.value, unit.value)
-        self.value *= self.unit.conversion_factor
         return None
 
 class Variable():
@@ -167,23 +130,10 @@ class Float(Variable):
             lb,
             ub,
             size=None,
-            precision=3,
-            unit=Unit(('',))):
+            precision=3):
         super().__init__(name,lb,ub,size)
         self.precision = precision
-        self.unit = unit
 
     def rng(self):
-        self.unit.rng()
-        magnitude = round(r.random(size=self.size), self.precision)
-        magnitude *= self.ub - self.lb
-        magnitude += self.lb
-        self.magnitude = magnitude*self.unit.conversion_factor
-        self.value = Quantity(magnitude, self.unit.value) # value=quantity, for consistency with integer class
+        self.value = round(r.random(size=self.size), self.precision)*(self.ub - self.lb) + self.lb
         return None
-
-if __name__ == '__main__':
-    q = qQuantity(1,'J')
-    print(q)
-    q = Quantity(1,'J')
-    print(q)

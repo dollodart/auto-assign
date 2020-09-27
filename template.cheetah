@@ -26,10 +26,10 @@ $arraylike
 Difficulty = $p.difficulty
 Number Points = $p.points
 \subsection{Problem}
-$p.statement.format_map({**$p.dct, **{$k + '_autofmt':$texfmt(v.value) for k,v in $p.dct.items()}})
+$p.statement.format_map({**$p.dct, **{$k + '_autofmt':$texfmt(v) for k,v in $p.dct.items()}})
 #if $is_soln is True
 \subsection{Solution}
-$p.solution.format_map({**$p.dct, **{$k + '_autofmt':$texfmt(v.value) for k,v in $p.dct.items()}})
+$p.solution.format_map({**$p.dct, **{$k + '_autofmt':$texfmt(v) for k,v in $p.dct.items()}})
 #else
 \vspace{$p.vspace$p.vspace_unit} 
 ## note \vspace $p.vspace$p.vspace_unit will fail
