@@ -25,7 +25,11 @@ class Assignment():
             self.subset = r.choice(self.problems, 
                     num_problems,
                     replace = False)
-        return self.subset
+        return None
+
+    def __iter__(self):
+        for p in self.problems:
+            yield p
 
 
 
@@ -79,17 +83,21 @@ class Problem():
 
         self.dof = len(self.inputs)
 
-    def rng(self):
-        self.dct = {v.name:v.rng() for v in self.inputs}
-        soln = self.solver(**self.dct)
+    def solve(self):
+        self.dct = {v.name:v for v in self.inputs}
+        soln = self.solver(**{k:v.value for k, v in self.dct.items()})
         
         for c, y in enumerate(soln):
-            self.dct[self.outputs[c]] = y
+            self.dct[self.outputs[c]] = Constant(self.outputs[c], y)
 
         # now add extraneous inputs
         self.dct = {**self.dct,
-                **{v.name:v.rng() for v in self.extraneous_inputs}}
-        return self.dct
+                **{v.name:v for v in self.extraneous_inputs}}
+        return None
+
+    def __iter__(self):
+        for v in self.inputs:
+            yield v
 
 class Constant():
     def __init__(self,
@@ -98,7 +106,7 @@ class Constant():
         self.name = name
         self.value = value
     def rng(self):
-        return self.value
+        return None
 
 class Variable():
     def __init__(self,
@@ -114,7 +122,7 @@ class Variable():
 class Integer(Variable):
     def rng(self):
         self.value = r.randint(self.lb, self.ub, size=self.size)
-        return self.value
+        return None
 
 class Float(Variable):
     def __init__(self,
@@ -128,4 +136,4 @@ class Float(Variable):
 
     def rng(self):
         self.value = round(r.random(size=self.size), self.precision)*(self.ub - self.lb) + self.lb
-        return self.value
+        return None

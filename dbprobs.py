@@ -8,60 +8,60 @@ def solver(x,y):
     return x + y,
 
 P01 = Problem(title = 'Sum Two Numbers',
-        statement = 'Sum the numbers ${x}$ and ${y}$. '
-        'Here is another number for fun: ${z}$.',
+        statement = 'Sum the numbers ${x.value}$ and ${y.value}$. '
+        'Here is another number for fun: ${z.value}$.',
         difficulty = 'easy',
         points = 2,
         inputs = (Integer('x',1,10),Integer('y',1,10)),
         extraneous_inputs = (Integer('z',-100,100),),
         solver = solver,
         outputs = ('w',),
-        solution = 'The sum of ${x}$ and ${y}$ is ${w}$'
+        solution = 'The sum of ${x.value}$ and ${y.value}$ is ${w.value}$'
         )
 
 def solver(x,y):
     return x - y,
 
 P02 = Problem(title = 'Subtract Two Numbers',
-        statement = 'Subtract the number ${y}$ from ${x}$. '
-        'Here is another number for fun: ${z}$.',
+        statement = 'Subtract the number ${y.value}$ from ${x.value}$. '
+        'Here is another number for fun: ${z.value}$.',
         difficulty = 'easy',
         points = 2,
         inputs = (Integer('x',1,10),Integer('y',1,10)),
         extraneous_inputs = (Integer('z',-100,100),),
         solver = solver,
         outputs = ('w',),
-        solution = 'The difference of ${x}$ and ${y}$ is ${w}$'
+        solution = 'The difference of ${x.value}$ and ${y.value}$ is ${w.value}$'
         )
 
 def solver(x,y):
     return x*y,
 
 P03 = Problem(title = 'Multiply Two Numbers',
-        statement = 'Multiply the numbers ${x}$ and ${y}$. '
-        'Here is another number for fun: ${z}$.',
+        statement = 'Multiply the numbers ${x.value}$ and ${y.value}$. '
+        'Here is another number for fun: ${z.value}$.',
         difficulty = 'easy',
         points = 2,
         inputs = (Integer('x',1,10),Integer('y',1,10)),
         extraneous_inputs = (Integer('z',-100,100),),
         solver = solver,
         outputs = ('w',),
-        solution = 'The product of ${x}$ and ${y}$ is ${w}$'
+        solution = 'The product of ${x.value}$ and ${y.value}$ is ${w.value}$'
         )
 
 def solver(x,y):
     return x / y,
 
 P04 = Problem(title = 'Divide Two Numbers',
-        statement = 'Divide the number ${x}$ by ${y}$. '
-        'Here is another number for fun: ${z}$.',
+        statement = 'Divide the number ${x.value}$ by ${y.value}$. '
+        'Here is another number for fun: ${z.value}$.',
         difficulty = 'easy',
         points = 2,
         inputs = (Integer('x',1,10),Integer('y',1,10)),
         extraneous_inputs = (Integer('z',-100,100),),
         solver = solver,
         outputs = ('w',),
-        solution = 'The quotient of ${x}$ and ${y}$ is ${w}$'
+        solution = 'The quotient of ${x.value}$ and ${y.value}$ is ${w.value}$'
         )
 
 from numpy import cumsum
@@ -70,7 +70,7 @@ def solver(x):
 
 P05 = Problem(title = 'Sum Several Numbers Cumulatively',
         statement = 'Sum the numbers in $${x_autofmt}$$ cumulatively top to bottom.'
-        ' The third element of this array is ${x[2]}$.',
+        ' The third element of this array is ${x.value[2]}$.',
         difficulty = 'medium',
         points = 4,
         inputs = (Integer('x',1,10,size=6),),
@@ -85,7 +85,7 @@ def solver(x):
 
 P06 = Problem(title = 'Sum Along Several Columns Cumulatively',
         statement = 'Sum along the columns in $${x_autofmt}$$ cumulatively top to bottom.'
-        ' The element in the second row and third column of this array is ${x[1][2]}$.',
+        ' The element in the second row and third column of this array is ${x.value[1][2]}$.',
         difficulty = 'hard',
         points = 6,
         inputs = (Integer('x',1,10,size=(6,6)),),
@@ -101,15 +101,15 @@ def solver(t,g):
 
 P07 = Problem(title = 'Acceleration for an Object Starting at Rest',
         statement = 'An object is released from rest from someones hand at the top of a building.' 
-        ' Before it hits the ground, it travels ${t}$ seconds.'
-        ' How far has it traveled? The local graviational constant is ${g}$ m$^2$/s',
+        ' Before it hits the ground, it travels ${t.value}$ seconds.'
+        ' How far has it traveled? The local graviational constant is ${g.value}$ m$^2$/s',
         difficulty = 'easy',
         points = 2,
         inputs = (Float('t',0.5,1.5), Constant('g',9.81)),
         extraneous_inputs = tuple(),
         solver=solver,
         outputs=('x',),
-        solution= 'After ${t}$ seconds the object has fallen ${x}$ meters.'
+        solution= 'After ${t.value}$ seconds the object has fallen ${x.value}$ meters.'
         )
 #A01 = Assignment( (P01,P02,P03,P04), title='Arithmetic Operations')
 A01 = Assignment( (P05,P06,P07), title='Several Arithmetic Operations')
