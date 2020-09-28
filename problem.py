@@ -1,12 +1,7 @@
+import numpy as np
 import numpy.random as r
-from quantities import Quantity as qQuantity
+from quantities import Quantity 
 from quantities.quantity import get_conversion_factor
-
-class Quantity(qQuantity):
-    def __str__(self):
-        return str(self.magnitude)
-    def __repr__(self):
-        return self.__str__()
 
 class Assignment():
     """
@@ -66,7 +61,6 @@ class Problem():
             points,
             inputs,
             extraneous_inputs,
-            outputs,
             solver,
             solution,
             references=None,
@@ -79,7 +73,6 @@ class Problem():
         self.points = points
         self.inputs = inputs
         self.extraneous_inputs = extraneous_inputs
-        self.outputs = outputs
         self.solver = solver
         self.solution = solution
 
@@ -93,8 +86,9 @@ class Problem():
         self.dct = {v.name:v for v in self.inputs}
         soln = self.solver(**{k:v.value for k, v in self.dct.items()})
         
-        for c, y in enumerate(soln):
-            self.dct[self.outputs[c]] = Constant(self.outputs[c], y)
+        for y in soln:
+            y.rng()
+            self.dct[y.name] = y
 
         # now add extraneous inputs
         self.dct = {**self.dct,
@@ -105,9 +99,36 @@ class Problem():
         for v in self.inputs:
             yield v
 
+def prec_round(a, precision=2):
+    if a == 0:
+        return a
+    else:
+        s = 1 if a > 0 else -1
+        m = np.log10(s * a) // 1
+        c = np.log10(s * a) % 1
+    return s * np.round(10**c, precision) * 10**m
 
-class Unit():
-    """Units should be an interable, not a set data structure (e.g., tuple or list)."""
+prec_round = np.vectorize(prec_round)
+#def meas_prec(a):
+#    """there isn't actually a way to measure/infer specified precision, since 10. and 10.0 are the same input"""
+#    a = str(a)
+#    a = str(a).replace('.','').strip('0')
+#    return len(a)
+
+class ConstantUnit():
+    def __init__(self,
+            unit):
+        self.value = unit
+        self.conversion_factor = 1
+    def rng(self):
+        return None
+    def __str__(self):
+        return Quantity(1,self.value).dimensionality.latex
+    def __repr__(self):
+        return self.__str__()
+
+class RandomUnit():
+    """Units should be an iterable, not a set data structure (e.g., tuple or list)."""
     def __init__(self,
             unit_set):
         self.unit_set = unit_set
@@ -121,9 +142,8 @@ class Unit():
 #        return cls(unit_set)
 
     def rng(self):
-        old_value = self.value
         self.value = r.choice(self.unit_set)
-        self.conversion_factor = get_conversion_factor(Quantity(1,old_value), Quantity(1,self.value))
+        self.conversion_factor = get_conversion_factor(Quantity(1,self.unit_set[0]), Quantity(1,self.value))
         # from, to convention
         # the float range is specified in the first unit provided in the unit "set" (where order actually matters)
 
@@ -133,59 +153,74 @@ class Unit():
     def __repr__(self):
         return self.__str__()
 
-class Constant():
+class ConstantVariable():
     def __init__(self,
             name,
             value,
-            unit=Unit(('',))):
+            unit=ConstantUnit('')):
         self.name = name
         self.value = value
         self.unit = unit
+
+    def __str__(self):
+        return str(self.value)
+
+class ConstantInteger(ConstantVariable):
     def rng(self):
-        self.unit.rng() #to be consistent, this should support randomizing units like variables
-        self.value = Quantity(self.value, self.unit.value)
-        self.value *= self.unit.conversion_factor
         return None
 
-class Variable():
+class ConstantFloat(ConstantVariable):
+    def __init__(self,
+            name,
+            svalue,
+            precision=3,
+            unit=ConstantUnit('')):
+        super().__init__(name,svalue,unit) 
+        self.precision = precision
+        self.svalue = svalue
+        
+    def rng(self):
+        self.unit.rng() 
+        value = self.svalue*self.unit.conversion_factor
+        self.value = prec_round(value,precision=self.precision)
+        return None
+
+class RandomVariable():
     def __init__(self,
             name,
             lb,
             ub,
-            size=None):
+            size=None,
+            unit=RandomUnit(('',))):
         self.name = name
         self.lb = lb
         self.ub = ub
         self.size = size
+    def __str__(self):
+        return str(self.value)
 
-class Integer(Variable):
+class RandomInteger(RandomVariable):
     def rng(self):
         self.value = r.randint(self.lb, self.ub, size=self.size)
         return None
 
-class Float(Variable):
+class RandomFloat(RandomVariable):
     def __init__(self,
             name,
             lb,
             ub,
             size=None,
             precision=3,
-            unit=Unit(('',))):
-        super().__init__(name,lb,ub,size)
+            unit=ConstantUnit('')):
+        super().__init__(name,lb,ub,size,unit=unit)
         self.precision = precision
         self.unit = unit
 
     def rng(self):
         self.unit.rng()
-        magnitude = round(r.random(size=self.size), self.precision)
-        magnitude *= self.ub - self.lb
-        magnitude += self.lb
-        self.magnitude = magnitude*self.unit.conversion_factor
-        self.value = Quantity(magnitude, self.unit.value) # value = quantity, for consistency with integer class
+        value = r.random(size=self.size)
+        value *= self.ub - self.lb
+        value += self.lb
+        value = value*self.unit.conversion_factor
+        self.value = prec_round(value, precision=self.precision)
         return None
-
-if __name__ == '__main__':
-    q = qQuantity(1,'J')
-    print(q)
-    q = Quantity(1,'J')
-    print(q)
