@@ -1,9 +1,11 @@
-from problem import Assignment, Problem, RandomFloat, RandomInteger, ConstantFloat, ConstantInteger, RandomUnit, ConstantUnit
+from problem import Assignment, Problem, RandomFloat,\
+        RandomInteger, ConstantFloat, ConstantInteger,\
+        RandomUnit, ConstantUnit, RandomSymbol
 # there is a subtle difference between init setting and having the variable be set in the class definition
 # all solvers must return iterables of variables defined by the classes in the modules
 
 def solver(x,y):
-    return ConstantInteger('w',x + y),
+    return ConstantInteger('w',x.value + y.value),
 
 P01 = Problem(title = 'Sum Two Numbers',
         statement = 'Sum the numbers ${x}$ and ${y}$. '
@@ -17,7 +19,7 @@ P01 = Problem(title = 'Sum Two Numbers',
         )
 
 def solver(x,y):
-    return ConstantInteger('w',x - y),
+    return ConstantInteger('w',x.value - y.value),
 
 P02 = Problem(title = 'Subtract Two Numbers',
         statement = 'Subtract the number ${y}$ from ${x}$. '
@@ -31,7 +33,7 @@ P02 = Problem(title = 'Subtract Two Numbers',
         )
 
 def solver(x,y):
-    return ConstantInteger('w',x*y),
+    return ConstantInteger('w',x.value*y.value),
 
 P03 = Problem(title = 'Multiply Two Numbers',
         statement = 'Multiply the numbers ${x}$ and ${y}$. '
@@ -45,7 +47,7 @@ P03 = Problem(title = 'Multiply Two Numbers',
         )
 
 def solver(x,y):
-    return ConstantFloat('w', x / y),
+    return ConstantFloat('w', x.value / y.value),
 
 P04 = Problem(title = 'Divide Two Numbers',
         statement = 'Divide the number ${x}$ by ${y}$. '
@@ -60,7 +62,7 @@ P04 = Problem(title = 'Divide Two Numbers',
 
 from numpy import cumsum
 def solver(x):
-    return ConstantInteger('w',cumsum(x)),
+    return ConstantInteger('w',cumsum(x.value)),
 
 P05 = Problem(title = 'Sum Several Numbers Cumulatively',
         statement = 'Sum the numbers in $${x_autofmt}$$ cumulatively top to bottom.'
@@ -74,7 +76,7 @@ P05 = Problem(title = 'Sum Several Numbers Cumulatively',
         )
 
 def solver(x):
-    return ConstantInteger('w',cumsum(x,axis=0)),
+    return ConstantInteger('w',cumsum(x.value,axis=0)),
 
 P06 = Problem(title = 'Sum Along Several Columns Cumulatively',
         statement = 'Sum along the columns in $${x_autofmt}$$ cumulatively top to bottom.'
@@ -88,7 +90,7 @@ P06 = Problem(title = 'Sum Along Several Columns Cumulatively',
         )
 
 def solver(t,g):
-    x = g*t**2/2
+    x = g.value*t.value**2/2
     return ConstantFloat('x',x,unit=RandomUnit(('m','ft'))),
 
 P07 = Problem(title = 'Acceleration for an Object Starting at Rest',
@@ -102,6 +104,21 @@ P07 = Problem(title = 'Acceleration for an Object Starting at Rest',
         solver=solver,
         solution= 'After ${t}$ {t.unit} the object has fallen ${x}$ {x.unit}.'
         )
+
+def solver(x, y):
+    while x.name == y.name:
+        x.rng()
+    return tuple()
+
+P08 = Problem(title = 'Complete the square',
+        statement = 'Complete the square for the expression $$ {x}^2 - 3{x}{y} \,.$$',
+        difficulty = 'medium',
+        points = 4,
+        inputs = (RandomSymbol('x',('x','y','z')),RandomSymbol('y',('x','y','z'))),
+        extraneous_inputs = tuple(),
+        solver=solver,
+        solution = 'The answer is $$({x}-\\frac 32 {y} )^{{2}} - \\frac 34 {y}^2 \,.$$'
+        )
 #A01 = Assignment( (P01,P02,P03,P04), title='Arithmetic Operations')
-A01 = Assignment( (P05,P06,P07), title='Several Arithmetic Operations')
-A01 = Assignment( (P07,), title='Several Arithmetic Operations')
+#A01 = Assignment( (P05,P06,P07), title='Several Arithmetic Operations')
+A01 = Assignment( (P08,), title='Several Arithmetic Operations')
