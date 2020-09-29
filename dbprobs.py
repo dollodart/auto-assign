@@ -106,7 +106,7 @@ P07 = Problem(title = 'Acceleration for an Object Starting at Rest',
         )
 
 def solver(x, y):
-    while x.name == y.name:
+    while x.value == y.value:
         x.rng()
     return tuple()
 
