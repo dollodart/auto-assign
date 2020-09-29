@@ -69,7 +69,7 @@ P05 = Problem(title = 'Sum Several Numbers Cumulatively',
         ' The third element of this array is ${x.value[2]}$.',
         difficulty = 'medium',
         points = 4,
-        inputs = (RandomInteger('x',1,10,size=6),),
+        inputs = (RandomInteger('x',1,10,size=((6,8,10),),),), # has randomized size
         extraneous_inputs = tuple(),
         solver=solver,
         solution = 'The cumulative sum is $$\\text{{cumsum}}({x_autofmt}) = {w_autofmt}\,.$$'
@@ -120,4 +120,5 @@ P08 = Problem(title = 'Complete the square',
         solution = 'The answer is $$({x}-\\frac 32 {y} )^{{2}} - \\frac 34 {y}^2 \,.$$'
         )
 #A01 = Assignment( (P01,P02,P03,P04), title='Arithmetic Operations')
-A01 = Assignment( (P05,P06,P07,P08), title='Several Arithmetic Operations')
+#A01 = Assignment( (P05,P06,P07,P08), title='Several Arithmetic Operations')
+A01 = Assignment( (P05,), title='test')

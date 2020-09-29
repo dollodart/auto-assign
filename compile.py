@@ -8,7 +8,7 @@ with open('template.cheetah','r') as _:
     tclass = Template.compile(_.read(), baseclass=dict)
 
 # randomly generate subset of problems
-A01.rng(3) 
+A01.rng(1) 
 
 for n in range(1): # number of students
     name_a = f'out/id-{n}.tex'
