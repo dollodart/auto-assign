@@ -71,43 +71,20 @@ primes = {'dimensionless': 1,
 
 
 def pfactor(x):
-    length = mass = time = substance =\
-        temperature = current =\
-        luminuous_intensity = information\
-        = currency = 0
-    for i in 2, 3, 5, 7, 11, 13, 17, 19, 23, 31, 37, 41, 43, 47:
+    l = [0]*9
+    c3 = 0
+    for c1,i in enumerate((2, 3, 5, 7, 11, 13, 17, 19, 23, 31, 37, 41, 43, 47)):
+        c2 = c1 % 2
         while x % i == 0 and x > 1:
             x /= i
-            if i == 2:
-                mass += 1
-            if i == 3:
-                mass -= 1
-            if i == 5:
-                length += 1
-            if i == 7:
-                length -= 1
-            if i == 11:
-                time += 1
-            if i == 13:
-                time -= 1
-            if i == 17:
-                currency += 1
-            if i == 19:
-                currency -= 1
-            if i == 23:
-                substance += 1
-            if i == 31:
-                substance -= 1
-            if i == 37:
-                temperature += 1
-            if i == 41:
-                temperature -= 1
-            if i == 43:
-                information += 1
-            if i == 47:
-                information -= 1
-    return mass, length, time, current, \
-        luminuous_intensity, substance, temperature, currency
+            if c2:
+                c3 -= 1
+            else:
+                c3 += 1
+        if c2: 
+            l[c1 // 2] = c3 
+            c3 = 0
+    return tuple(l)
 
 
 def infer_dimensionality(simplified_quantity):
