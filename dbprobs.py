@@ -93,7 +93,7 @@ def solver(t,g):
 
 P07 = Problem(title = 'Acceleration for an Object Starting at Rest',
         statement = 'An object is released from rest from someones hand at the top of a building.' 
-        ' Before it hits the ground, it travels ${t}$ {t.unit}.'
+        ' Before it hits the ground, it travels {t} {t.unit}.'
         ' How far has it traveled? The local graviational constant is ${g}$ {g.unit}',
         difficulty = 'easy',
         points = 2,
@@ -104,3 +104,4 @@ P07 = Problem(title = 'Acceleration for an Object Starting at Rest',
         )
 #A01 = Assignment( (P01,P02,P03,P04), title='Arithmetic Operations')
 A01 = Assignment( (P05,P06,P07), title='Several Arithmetic Operations')
+A01 = Assignment( (P07,), title='Several Arithmetic Operations')

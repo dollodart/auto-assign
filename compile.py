@@ -7,7 +7,7 @@ from dbprobs import A01
 with open('template.cheetah','r') as _:
     tclass = Template.compile(_.read(), baseclass=dict)
 
-A01.rng(3) # 3 problems
+A01.rng(1) # 3 problems
 
 for n in range(1): # number of students
     name_a = f'out/id-{n}.tex'

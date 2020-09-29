@@ -229,5 +229,7 @@ class RandomFloat(RandomVariable):
 
 if __name__ == '__main__':
     ru = RandomUnit.from_unit_dimensionality('kg*m^2/s^2')
+    print(ru.value)
     print(ru.unit_set)
-
+    ru.rng()
+    print(ru.value)
