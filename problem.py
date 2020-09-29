@@ -84,7 +84,7 @@ class Problem():
 
     def solve(self):
         self.dct = {v.name:v for v in self.inputs}
-        soln = self.solver(**{k:v.value for k, v in self.dct.items()})
+        soln = self.solver(**self.dct)
         
         for y in soln:
             y.rng()
@@ -154,6 +154,20 @@ class RandomUnit():
 
     def __str__(self):
         return Quantity(1,self.value).dimensionality.latex
+
+#greek_lower = 'alpha','beta','gamma','delta',
+#greek_upper = 'Gamma','Delta'
+class RandomSymbol():
+    def __init__(self,
+            name,
+            symbolset):
+        self.name = name
+        self.symbolset = symbolset
+    def rng(self):
+        self.value = r.choice(self.symbolset)
+    def __str__(self):
+        return self.value
+
 
 class ConstantVariable():
     def __init__(self,
