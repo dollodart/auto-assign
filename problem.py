@@ -109,11 +109,6 @@ def prec_round(a, precision=2):
     return s * np.round(10**c, precision) * 10**m
 
 prec_round = np.vectorize(prec_round)
-#def meas_prec(a):
-#    """there isn't actually a way to measure/infer specified precision, since 10. and 10.0 are the same input"""
-#    a = str(a)
-#    a = str(a).replace('.','').strip('0')
-#    return len(a)
 
 class ConstantUnit():
     def __init__(self,
@@ -124,34 +119,41 @@ class ConstantUnit():
         return None
     def __str__(self):
         return Quantity(1,self.value).dimensionality.latex
-    def __repr__(self):
-        return self.__str__()
 
-class RandomUnit():
-    """Units should be an iterable, not a set data structure (e.g., tuple or list)."""
-    def __init__(self,
-            unit_set):
-        self.unit_set = unit_set
+class RandomUnit(): 
+    """ 
+    Units should be an iterable, not a set data
+    structure (e.g., tuple or list).  The first unit in the provided
+    iterable is assumed to the be one which the random or constant variable
+    was specified in.
+    """
+
+    def __init__(self, unit_set): 
+        self.unit_set = unit_set 
         self.value = self.unit_set[0]
 
-#    @classmethod
-#    def from_dimensionality(cls, dimensionality):
-#        #look up all units for that dimensionality
-#        #... 
-#        #ensure the SI unit is the first one given, since this is assumed the value 
-#        return cls(unit_set)
+    @classmethod
+    def from_unit_dimensionality(cls, unit):
+        """Infers dimensionality from unit and finds"""
+
+        #look up all units for that dimensionality
+        #ensure the SI unit is the first one given, since this is assumed the value 
+
+        from qtable import df, infer_dimensionality, dim2siunit
+        dim = infer_dimensionality(Quantity(1,unit).simplified)
+        bl = df['dimension'] == dim
+        unit_set = list(df[bl]['unit']) # si units aren't in this dataframe
+        unit_set = [dim2siunit(dim)] + unit_set
+        
+        return cls(unit_set)
 
     def rng(self):
         self.value = r.choice(self.unit_set)
         self.conversion_factor = get_conversion_factor(Quantity(1,self.unit_set[0]), Quantity(1,self.value))
         # from, to convention
-        # the float range is specified in the first unit provided in the unit "set" (where order actually matters)
 
     def __str__(self):
         return Quantity(1,self.value).dimensionality.latex
-
-    def __repr__(self):
-        return self.__str__()
 
 class ConstantVariable():
     def __init__(self,
@@ -224,3 +226,8 @@ class RandomFloat(RandomVariable):
         value = value*self.unit.conversion_factor
         self.value = prec_round(value, precision=self.precision)
         return None
+
+if __name__ == '__main__':
+    ru = RandomUnit.from_unit_dimensionality('kg*m^2/s^2')
+    print(ru.unit_set)
+

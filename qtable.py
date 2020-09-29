@@ -3,7 +3,7 @@ Very indirect way of obtaining a datatable of units, owing to some
 difficulty with the UnitRegistry object in the quantities package.
 
 You can print the object __context object, but I wasn't able
-to pickle it due to threadlock. Maybe assign it a global variable name and export it.
+to pickle it due to threadlock. Maybe assign it a global variable name and export it some otherway.
 """
 
 compound_dimensions = ['acceleration', 'angle', 'area', 'compound', 'concentration', 
@@ -68,6 +68,10 @@ def pfactor(x):
                 time += 1
             if i == 13:
                 time -= 1
+            if i == 17:
+                currency += 1
+            if i == 19:
+                currency -= 1
             if i == 23:
                 substance += 1
             if i == 31:
@@ -84,7 +88,7 @@ def pfactor(x):
             luminuous_intensity, substance, temperature, currency
 
 def infer_dimensionality(simplified_quantity):
-    """In the absence of symbolic algebra, or a legitimate natural
+    """In the absence of symbolic algebra, or a natural
     language math parser, for inputs of a simple type, prime factorize a
     multiplication problem to find counts of units."""
 
@@ -99,6 +103,10 @@ def infer_dimensionality(simplified_quantity):
     dimn = eval(unit, primes) 
     dim = pfactor(dimn)
     return dim 
+
+def dim2siunit(dim):
+    sis = ('kg','m','s','A','?','mol','K','$')
+    return '*'.join(f'{sis[i]}^{c}' for i, c in enumerate(dim) if c != 0)
 
 for cd in compound_dimensions:
     module = base + '.' + cd
