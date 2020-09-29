@@ -120,5 +120,4 @@ P08 = Problem(title = 'Complete the square',
         solution = 'The answer is $$({x}-\\frac 32 {y} )^{{2}} - \\frac 34 {y}^2 \,.$$'
         )
 #A01 = Assignment( (P01,P02,P03,P04), title='Arithmetic Operations')
-#A01 = Assignment( (P05,P06,P07), title='Several Arithmetic Operations')
-A01 = Assignment( (P08,), title='Several Arithmetic Operations')
+A01 = Assignment( (P05,P06,P07,P08), title='Several Arithmetic Operations')
