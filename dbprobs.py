@@ -1,8 +1,6 @@
 from problem import Assignment, Problem, RandomFloat,\
         RandomInteger, ConstantFloat, ConstantInteger,\
         RandomUnit, ConstantUnit, RandomSymbol
-# there is a subtle difference between init setting and having the variable be set in the class definition
-# all solvers must return iterables of variables defined by the classes in the modules
 
 def solver(x,y):
     return ConstantInteger('w',x.value + y.value),
@@ -120,5 +118,4 @@ P08 = Problem(title = 'Complete the square',
         solution = 'The answer is $$({x}-\\frac 32 {y} )^{{2}} - \\frac 34 {y}^2 \,.$$'
         )
 #A01 = Assignment( (P01,P02,P03,P04), title='Arithmetic Operations')
-#A01 = Assignment( (P05,P06,P07,P08), title='Several Arithmetic Operations')
-A01 = Assignment( (P05,), title='test')
+A01 = Assignment( (P05,P06,P07,P08), title='Several Arithmetic Operations')

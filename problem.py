@@ -1,7 +1,5 @@
 import numpy as np
 import numpy.random as r
-from quantities import Quantity 
-from quantities.quantity import get_conversion_factor
 
 class Assignment():
     """
@@ -111,6 +109,8 @@ def prec_round(a, precision=2):
 
 prec_round = np.vectorize(prec_round)
 
+from unit import dim, idim, dim2si, conv
+
 class ConstantUnit():
     def __init__(self,
             unit):
@@ -119,7 +119,7 @@ class ConstantUnit():
     def rng(self):
         return None
     def __str__(self):
-        return Quantity(1,self.value).dimensionality.latex
+        return self.value
 
 class RandomUnit(): 
     """ 
@@ -129,32 +129,29 @@ class RandomUnit():
     was specified in.
     """
 
-    def __init__(self, unit_set): 
+    def __init__(self, unit_set, dimensionality=None): 
         self.unit_set = unit_set 
         self.value = self.unit_set[0]
+        if dimensionality is None:
+            self.dimensionality = dim[self.value]
 
     @classmethod
     def from_unit_dimensionality(cls, unit):
-        """Infers dimensionality from unit and finds"""
+        """Infers dimensionality from unit specified as a string."""
 
-        #look up all units for that dimensionality
-        #ensure the SI unit is the first one given, since this is assumed the value 
-
-        from qtable import df, infer_dimensionality, dim2siunit
-        dim = infer_dimensionality(Quantity(1,unit).simplified)
-        bl = df['dimension'] == dim
-        unit_set = list(df[bl]['unit']) # si units aren't in this dataframe
-        unit_set = [dim2siunit(dim)] + unit_set
+        d = dim[unit]
+        unit_set = idim[d]
+        unit_set = sorted(unit_set, key = lambda x: 0 if x == unit else 1)
         
         return cls(unit_set)
 
     def rng(self):
         self.value = r.choice(self.unit_set)
-        self.conversion_factor = get_conversion_factor(Quantity(1,self.unit_set[0]), Quantity(1,self.value))
+        self.conversion_factor = conv[self.unit_set[0]]/conv[self.value]
         # from, to convention
 
     def __str__(self):
-        return Quantity(1,self.value).dimensionality.latex
+        return self.value
 
 #greek_lower = 'alpha','beta','gamma','delta',
 #greek_upper = 'Gamma','Delta'
@@ -262,7 +259,7 @@ class RandomFloat(RandomVariable):
         return None
 
 if __name__ == '__main__':
-    ru = RandomUnit.from_unit_dimensionality('kg*m^2/s^2')
+    ru = RandomUnit.from_unit_dimensionality('kg*m^2*s^-2')
     print(ru.value)
     print(ru.unit_set)
     ru.rng()
