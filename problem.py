@@ -6,7 +6,8 @@ from quantities.quantity import get_conversion_factor
 class Assignment():
     """
 
-    Assignment class randomly selects problems, then can randomly generate from those selected problems
+    Assignment class randomly selects problems, then can randomly
+    generate from those selected problems
 
     """
 
@@ -201,6 +202,22 @@ class ConstantFloat(ConstantVariable):
         self.value = prec_round(value,precision=self.precision)
         return None
 
+class RandomSize():
+    def __init__(self,
+            size):
+        self.size = size
+
+    def rng(self):
+        value = self.size
+        if type(self.size) is tuple:
+            if type(self.size[0]) is tuple:
+                #value = tuple(r.choice(x for x in self.size))
+                x = []
+                for tup in self.size:
+                    x.append( r.choice(tup) )
+                value = tuple(x)
+        self.value = value
+
 class RandomVariable():
     def __init__(self,
             name,
@@ -211,13 +228,15 @@ class RandomVariable():
         self.name = name
         self.lb = lb
         self.ub = ub
-        self.size = size
+        self.size = RandomSize(size)
+
     def __str__(self):
         return str(self.value)
 
 class RandomInteger(RandomVariable):
     def rng(self):
-        self.value = r.randint(self.lb, self.ub, size=self.size)
+        self.size.rng()
+        self.value = r.randint(self.lb, self.ub, size=self.size.value)
         return None
 
 class RandomFloat(RandomVariable):
@@ -234,7 +253,8 @@ class RandomFloat(RandomVariable):
 
     def rng(self):
         self.unit.rng()
-        value = r.random(size=self.size)
+        self.size.rng()
+        value = r.random(size=self.size.value)
         value *= self.ub - self.lb
         value += self.lb
         value = value*self.unit.conversion_factor
