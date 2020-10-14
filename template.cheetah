@@ -1,5 +1,6 @@
+#from numpy import ndarray
 #def texfmt($arraylike)
-#if 'ndarray' in str(type($arraylike))
+#if type($arraylike) == ndarray
 \begin{pmatrix}
 #if len($arraylike.shape) == 1
 #echo '\\\\'.join(str(x) for x in $arraylike)
