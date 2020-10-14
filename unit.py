@@ -12,6 +12,7 @@ for k, v in d.items():
         v = v.simplified
         mag = v.magnitude
         d = {k.symbol:v for k, v in dict(v.dimensionality).items()}
+        d = {**d, **{k.name:v for k, v in dict(v.dimensionality).items()}}
         dim[k] = (d['kg'] if 'kg' in d.keys() else 0,
                   d['m'] if 'm' in d.keys() else 0,
                   d['s'] if 's' in d.keys() else 0,
@@ -61,5 +62,3 @@ for i in range(-5,5):
 #        (0,0,1): 'Time',
 #        (0,0,-1): 'Frequency/Number Rate',
 #        (0,-1,0): 'Inverse Distance'} #...
-
-

@@ -55,39 +55,61 @@ def BNF():
         bnf = expr
     return bnf
 
-def str2tuple(x):
-    """Converts string to tuple or passes tuple type through."""
-    if x == 'M':
-        return 1, 0, 0
-    elif x == 'D':
-        return 0, 1, 0
-    elif x == 'T':
-        return 0, 0, 1
+def str2dict(x):
+    """Converts string to dict or passes dict type through."""
+    if type(x) is str:
+        return {x:1}
     return x
 
 
 def linscale(x, y):
-    x = str2tuple(x)
-    return x[0] * y, x[1] * y, x[2] * y
+    x = str2dict(x)
+    if type(x) is int:
+        return x**y
+    return {k:y*v for k, v in x.items()}
 
 
 def linadd(x, y):
-    x = str2tuple(x)
-    y = str2tuple(y)
-    return x[0] + y[0], x[1] + y[1], x[2] + y[2]
+    x = str2dict(x)
+    y = str2dict(y)
+    k1 = set(x.keys())
+    k2 = set(y.keys())
+    inter = k1.intersection(k2)
+    diff1 = k1.difference(k2)
+    diff2 = k2.difference(k1)
+    d = {}
+    for k in inter:
+        d[k] = x[k] + y[k]
+    for k in diff1:
+        d[k] = x[k]
+    for k in diff2:
+        d[k] = y[k]
+
+    return d 
 
 
 def linsubtract(x, y):
-    x = str2tuple(x)
-    y = str2tuple(y)
-    return x[0] - y[0], x[1] - y[1], x[2] - y[2]
+    x = str2dict(x)
+    y = str2dict(y)
+    k1 = set(x.keys())
+    k2 = set(y.keys())
+    inter = k1.intersection(k2)
+    diff1 = k1.difference(k2)
+    diff2 = k2.difference(k1)
+    d = {}
+    for k in inter:
+        d[k] = x[k] - y[k]
+    for k in diff1:
+        d[k] = x[k]
+    for k in diff2:
+        d[k] = -y[k]
+
+    return d 
 
 
-opn = {
-    "*": linadd,
-    "/": linsubtract,
-    "^": linscale
-}
+opn = {"*": linadd,
+       "/": linsubtract,
+       "^": linscale}
 
 
 def evaluate_stack(s):
@@ -113,9 +135,6 @@ def evaluate_stack(s):
 
 def eval_dim(s):
     exprStack[:] = []
-    s = s.replace('kg', 'M')
-    s = s.replace('m', 'D')
-    s = s.replace('s', 'T')
     BNF().parseString(s, parseAll=True)
     return evaluate_stack(exprStack[:])
 
@@ -124,9 +143,6 @@ if __name__ == "__main__":
     def test(s):
         exprStack[:] = []
         try:
-            s = s.replace('kg', 'M')
-            s = s.replace('m', 'D')
-            s = s.replace('s', 'T')
             results = BNF().parseString(s, parseAll=True)
             print(results)
             val = evaluate_stack(exprStack[:])
@@ -139,5 +155,17 @@ if __name__ == "__main__":
     test('(kg/m)*(m/s)')
     test('(kg^-1/m)*(s/m^-1)')
     test('(kg*m)^1.5/s')
-    f = eval_dim('(kg/m/m)*s')
 
+    st = '(kg/m/ft)*(Btu^2)^3' # Btu^2^3 evals to Btu^8
+    # since calculator has right associative power and evals 2^3=8 first
+    st = '(kg/m/ft)*Btu^2^3'
+    f = eval_dim(st)
+    print(st)
+    print(f)
+
+    l = [0]*7
+    from unit import dim
+    for k, v in f.items():
+        d = tuple(x*v for x in dim[k])
+        l = [l[i] + d[i] for i in range(len(d))]
+    print(l)
