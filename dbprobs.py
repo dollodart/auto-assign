@@ -87,17 +87,21 @@ P06 = Problem(title = 'Sum Along Several Columns Cumulatively',
         solution = 'The cumulative sum is $$\\text{{cumsum}}({x_autofmt}) = {w_autofmt}\,.$$'
         )
 
+import numpy as np
 def solver(t,g):
     x = g.value*t.value**2/2
-    return ConstantFloat('x',x,unit=RandomUnit(('m','ft'))),
+    assert (np.array(g.unit.dimensionality) + 2*np.array(t.unit.dimensionality) == np.array((0,1,0,0,0,0,0))).all()
+    from unit import conv
+    x /= conv['ft']
+    return ConstantFloat('x',x,unit=RandomUnit(('ft','m'))),
 
 P07 = Problem(title = 'Acceleration for an Object Starting at Rest',
         statement = 'An object is released from rest from someones hand at the top of a building.' 
         ' Before it hits the ground, it travels {t} {t.unit}.'
-        ' How far has it traveled? The local graviational constant is ${g}$ {g.unit}',
+        ' How far has it traveled? The local graviational constant is ${g}$ ${g.unit}$',
         difficulty = 'easy',
         points = 2,
-        inputs = (RandomFloat('t',0.5,1.5,unit=ConstantUnit('s')), ConstantFloat('g',9.81,precision=3,unit=ConstantUnit('m/s**2'))),
+        inputs = (RandomFloat('t',0.5,1.5,unit=ConstantUnit('s')), ConstantFloat('g',9.81,precision=3,unit=ConstantUnit('m*s^-2'))),
         extraneous_inputs = tuple(),
         solver=solver,
         solution= 'After ${t}$ {t.unit} the object has fallen ${x}$ {x.unit}.'
@@ -108,7 +112,7 @@ def solver(x, y):
         x.rng()
     return tuple()
 
-P08 = Problem(title = 'Complete the square',
+P09 = Problem(title = 'Complete the square',
         statement = 'Complete the square for the expression $$ {x}^2 - 3{x}{y} \,.$$',
         difficulty = 'medium',
         points = 4,
@@ -118,4 +122,6 @@ P08 = Problem(title = 'Complete the square',
         solution = 'The answer is $$({x}-\\frac 32 {y} )^{{2}} - \\frac 34 {y}^2 \,.$$'
         )
 #A01 = Assignment( (P01,P02,P03,P04), title='Arithmetic Operations')
-A01 = Assignment( (P05,P06,P07,P08), title='Several Arithmetic Operations')
+#A01 = Assignment( (P05,P06), title='Several Arithmetic Operations')
+A01 = Assignment( (P07, ), title='Kinematics')
+#A01 = Assignment( (P09, ), title='Algebra')

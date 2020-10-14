@@ -116,9 +116,12 @@ from unit import dim, idim, dim2si, conv
 
 class ConstantUnit():
     def __init__(self,
-            unit):
+            unit,
+            dimensionality=None):
         self.value = unit
         self.conversion_factor = 1
+        if dimensionality is None:
+            self.dimensionality = dim[self.value]
     def rng(self):
         return None
     def __str__(self):
