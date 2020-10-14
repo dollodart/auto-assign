@@ -36,38 +36,24 @@ def BNF():
         fnumber = Regex(r"[+-]?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?")
         ident = Word(alphas, alphanums + "_$")
 
-        plus, minus, mult, div = map(Literal, "+-*/")
+        plus, minus = map(Literal, "*/")
         lpar, rpar = map(Suppress, "()")
         addop = plus | minus
-        multop = mult | div
-        expop = Literal("^")
+        multop = Literal("^")
 
         expr = Forward()
-        # add parse action that replaces the function identifier with a (name,
-        # number of args) tuple
-
-        atom = (
-            addop[...]
-            + (
-                (fnumber | ident).setParseAction(push_first)
-                | Group(lpar + expr + rpar)
-            )
-        ).setParseAction(push_unary_minus)
+        aatom = (fnumber | ident).setParseAction(push_first)
+        pgroup = Group(lpar + expr + rpar)
+        atom = (addop[...] + (aatom | pgroup)).setParseAction(push_unary_minus)
 
         # by defining exponentiation as "atom [ ^ factor ]..." instead of "atom [ ^ atom ]...", we get right-to-left
         # exponents, instead of left-to-right that is, 2^3^2 = 2^(3^2), not
         # (2^3)^2.
         factor = Forward()
-        factor <<= atom + (expop + factor).setParseAction(push_first)[...]
-        term = factor + (multop + factor).setParseAction(push_first)[...]
-        expr <<= term + (addop + term).setParseAction(push_first)[...]
+        factor <<= atom + (multop + factor).setParseAction(push_first)[...]  
+        expr <<= factor + (addop + factor).setParseAction(push_first)[...]
         bnf = expr
     return bnf
-
-
-# map operator symbols to corresponding arithmetic operations
-epsilon = 1e-12
-
 
 def str2tuple(x):
     """Converts string to tuple or passes tuple type through."""
@@ -80,27 +66,27 @@ def str2tuple(x):
     return x
 
 
-def mypow(x, y):
+def linscale(x, y):
     x = str2tuple(x)
     return x[0] * y, x[1] * y, x[2] * y
 
 
-def mymult(x, y):
+def linadd(x, y):
     x = str2tuple(x)
     y = str2tuple(y)
     return x[0] + y[0], x[1] + y[1], x[2] + y[2]
 
 
-def mydiv(x, y):
+def linsubtract(x, y):
     x = str2tuple(x)
     y = str2tuple(y)
     return x[0] - y[0], x[1] - y[1], x[2] - y[2]
 
 
 opn = {
-    "*": mymult,
-    "/": mydiv,
-    "^": mypow
+    "*": linadd,
+    "/": linsubtract,
+    "^": linscale
 }
 
 
@@ -118,8 +104,11 @@ def evaluate_stack(s):
     else:
         try:
             return int(op)
-        except BaseException:
-            return op
+        except ValueError:
+            try:
+                return float(op)
+            except: 
+                return op
 
 
 def eval_dim(s):
@@ -139,15 +128,16 @@ if __name__ == "__main__":
             s = s.replace('m', 'D')
             s = s.replace('s', 'T')
             results = BNF().parseString(s, parseAll=True)
+            print(results)
             val = evaluate_stack(exprStack[:])
         except ParseException as pe:
             print(s, "failed parse:", str(pe))
         else:
-            print(results)
             print(val)
 
     test('kg*m/s^2')
     test('(kg/m)*(m/s)')
     test('(kg^-1/m)*(s/m^-1)')
+    test('(kg*m)^1.5/s')
     f = eval_dim('(kg/m/m)*s')
-    print(f)
+
