@@ -33,6 +33,9 @@ class Assignment():
         for p in self.problems:
             yield p
 
+    def __len__(self):
+        return len(self.problems)
+
 
 
 class Problem(): 

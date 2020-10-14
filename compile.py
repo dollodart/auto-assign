@@ -7,8 +7,8 @@ from dbprobs import A01
 with open('template.cheetah','r') as _:
     tclass = Template.compile(_.read(), baseclass=dict)
 
-# randomly generate subset of problems
-A01.rng(4) 
+# randomly generate possible subset of problems
+A01.rng(len(A01)) 
 
 for n in range(1): # number of students
     name_a = f'out/id-{n}.tex'
