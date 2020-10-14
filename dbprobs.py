@@ -67,7 +67,7 @@ P05 = Problem(title = 'Sum Several Numbers Cumulatively',
         ' The third element of this array is ${x.value[2]}$.',
         difficulty = 'medium',
         points = 4,
-        inputs = (RandomInteger('x',1,10,size=((6,8,10),),),), # has randomized size
+        inputs = (RandomInteger('x',1,10,size=((6,8,10),)),), # has randomized size
         extraneous_inputs = tuple(),
         solver=solver,
         solution = 'The cumulative sum is $$\\text{{cumsum}}({x_autofmt}) = {w_autofmt}\,.$$'
