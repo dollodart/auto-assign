@@ -30,6 +30,37 @@ in its input parameters, which are defined to be in a range of values,
 unless a constant. Unit randomization is also supported for both inputs
 and outputs, and symbol randomization for algebra or analytical solutions.
 
+# Implementation of Dimensioned Quantities
+
+There are at least two packages, the python-quantities package and
+brian2 packages, that support unit specification and calculating with
+dimensioned quantities. The python-quantities package relies on python's
+built-in `eval` to evaluate arbitrary unit specification strings,
+while the brian2 package has its own parser and compiler which is also
+developed for reading plaintext equation specifications. Both of these
+packages implement subclasses of numpy arrays which have redefined
+ufuncs to also calculate the units and dimensionality for composite
+objects or attributes of the subclass with the same magic methods
+corresponding to infix notation such as arithmetic (+-\*/), power
+(\*\*), and matrix multiplication (@). Note that while python-quantities
+conflates dimension (such as length and mass) with unit (such as meter
+and kilogram), brian2 has separate Dimension, Unit, and Quantity
+objects.
+
+In fact, though a computational nueroscience package, the largest
+non-computer generated and non-test file by line count is the
+brian2.units.fundamentalunits module at 2491. The differential equation
+solutions are, when not explicit solvers (next matrix is matrix
+multiplication on previous matrix), from the GNU scientific library.
+
+To use these classes, it is just a matter of defining subclasses
+which have randomization methods. What is done here is a simpler
+implementation of the brian2 quantity in which units are dictionaries
+and dimensions are 7 element numpy arrays, and unit conversions are
+achieved just by using a reference dictionary of units. Since brian2 has
+actually little unit support, only metric prefixes on SI units, the unit
+registry from python-quantities is used.
+
 # TODOs
 
 - Integrate better the quantities.Quantity package (prime factorizing an
@@ -89,3 +120,25 @@ python module.
 space permissive, the awkwardness of long strings in Python can be made
 irrelevant by using, e.g., triple quoted with indents. Anyway white
 space can be trimmed like is done for docstrings.
+
+The first motivation is actually weak, since it would in effect require
+defining a new markup, or to have many classes which don't just
+represent variables but also their formatting in the text body, like
+InlineEquation. The template documents would then have to have either
+markup converters (string manipulation) or type-inspecting formats,
+e.g., 
+
+```
+#from problem import InlineEquation
+#if type(A) == InlineEquation
+#...
+#end if
+```
+
+But already there are markup converters. The second motivation,
+standing alone, is weak because it is possible to parse the problem
+statements from the templates provided they exist. Finally, Tex is
+the best mother-format, since it has the richest selection of in-line
+mathematical typesetting--nothing else comes close and web renderes just
+borrow Tex formatting with a javascript package MathJax, which has only
+a subset of available macros such as those of amsmath.
