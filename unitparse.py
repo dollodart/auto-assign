@@ -134,6 +134,9 @@ def evaluate_stack(s):
 
 
 def eval_units(s):
+    if not s:
+        return {}
+
     exprStack[:] = []
     BNF().parseString(s, parseAll=True)
     r = evaluate_stack(exprStack[:])

@@ -1,6 +1,6 @@
 from problem import Assignment, Problem, RandomFloat,\
         RandomInteger, ConstantFloat, ConstantInteger,\
-        RandomUnit, ConstantUnit, RandomSymbol
+        RandomUnit, ConstantUnit, RandomSymbol, RandomQuantity
 
 def solver(x,y):
     return ConstantInteger('w',x.value + y.value),
@@ -88,12 +88,12 @@ P06 = Problem(title = 'Sum Along Several Columns Cumulatively',
         )
 
 import numpy as np
+LENGTH = (0, 1, 0, 0, 0, 0, 0)
+
 def solver(t,g):
     x = g.value*t.value**2/2
-    assert (np.array(g.unit.dimensionality) + 2*np.array(t.unit.dimensionality) == np.array((0,1,0,0,0,0,0))).all()
-    from unit import conv
-    x /= conv['ft']
-    return ConstantFloat('x',x,unit=RandomUnit(('ft','m'))),
+    assert (x.dimension == LENGTH).all()
+    return ConstantFloat('x',np.array(x),unit=RandomUnit(('ft','m'))),
 
 P07 = Problem(title = 'Acceleration for an Object Starting at Rest',
         statement = 'An object is released from rest from someones hand at the top of a building.' 
@@ -101,7 +101,8 @@ P07 = Problem(title = 'Acceleration for an Object Starting at Rest',
         ' How far has it traveled? The local graviational constant is ${g}$ ${g.unit}$',
         difficulty = 'easy',
         points = 2,
-        inputs = (RandomFloat('t',0.5,1.5,unit=ConstantUnit('s')), ConstantFloat('g',9.81,precision=3,unit=ConstantUnit('m*s^-2'))),
+        inputs = (RandomQuantity('t',0.5,1.5,precision=3,unit=ConstantUnit('s')),
+                  RandomQuantity('g',9.81,9.81,precision=3,unit=ConstantUnit('m*s^-2'))),
         extraneous_inputs = tuple(),
         solver=solver,
         solution= 'After ${t}$ {t.unit} the object has fallen ${x}$ {x.unit}.'

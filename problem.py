@@ -1,5 +1,6 @@
 import numpy as np
 import numpy.random as r
+from utils import prec_round
 
 class Assignment():
     """
@@ -101,31 +102,40 @@ class Problem():
         for v in self.inputs:
             yield v
 
-def prec_round(a, precision=2):
-    if a == 0:
-        return a
-    else:
-        s = 1 if a > 0 else -1
-        m = np.log10(s * a) // 1
-        c = np.log10(s * a) % 1
-    return s * np.round(10**c, precision) * 10**m
+from unit import dim, idim
+from unitparse import eval_units
+from quantity import Quantity, eval_dimension, eval_conversion_factor
 
-prec_round = np.vectorize(prec_round)
+class RandomSize():
+    def __init__(self,
+            size):
+        self.size = size
 
-from unit import dim, idim, dim2si, conv
+    def rng(self):
+        value = self.size
+        if type(self.size) is tuple:
+            if type(self.size[0]) is tuple:
+                #value = tuple(r.choice(x for x in self.size))
+                x = []
+                for tup in self.size:
+                    x.append( r.choice(tup) )
+                value = tuple(x)
+        self.value = value
 
 class ConstantUnit():
     def __init__(self,
             unit,
             dimensionality=None):
+        if type(unit) is str:
+            unit = eval_units(unit)
         self.value = unit
         self.conversion_factor = 1
         if dimensionality is None:
-            self.dimensionality = dim[self.value]
+            self.dimensionality = eval_dimension(self.value)
     def rng(self):
         return None
     def __str__(self):
-        return self.value
+        return '*'.join(f'{k}({v})' for k, v in self.value.items() if abs(v) > 0)
 
 class RandomUnit(): 
     """ 
@@ -136,16 +146,20 @@ class RandomUnit():
     """
 
     def __init__(self, unit_set, dimensionality=None): 
-        self.unit_set = unit_set 
-        self.value = self.unit_set[0]
+        self.unit_set = [eval_units(x) if type(x) is str else x for x in unit_set]
+        self.rng()
         if dimensionality is None:
-            self.dimensionality = dim[self.value]
+            self.dimensionality = eval_dimension(self.value)
 
     @classmethod
     def from_unit_dimensionality(cls, unit):
         """Infers dimensionality from unit specified as a string."""
 
-        d = dim[unit]
+        try:
+            d = eval_dimension(eval_units(unit))
+            d = dim[d]
+        except KeyError:
+            pass
         unit_set = idim[d]
         unit_set = sorted(unit_set, key = lambda x: 0 if x == unit else 1)
         
@@ -153,11 +167,44 @@ class RandomUnit():
 
     def rng(self):
         self.value = r.choice(self.unit_set)
-        self.conversion_factor = conv[self.unit_set[0]]/conv[self.value]
+        self.conversion_factor = eval_conversion_factor(self.unit_set[0])/eval_conversion_factor(self.value)
         # from, to convention
 
     def __str__(self):
-        return self.value
+        return '*'.join(f'{k}({v})' for k, v in self.value.items() if abs(v) > 0)
+
+
+class RandomQuantity:
+    """
+
+    It is difficult to implement RandomQuantitty as something other
+    than a composite object which makes new instances of quantity on
+    randomization if you want to support variable array sizes, since
+    numpy arrays do not support element addition and subtraction well.
+
+    """
+
+    def __init__(self, name, lb, ub, size=RandomSize((1,)), unit=ConstantUnit(''), precision=14):
+        self.name = name
+        self.value = [] # will be deleted in rng
+        self.size = size
+        self.unit = unit
+        self.precision = precision
+        self.lb = lb
+        self.ub = ub
+        self.rng()
+
+    def rng(self):
+        self.size.rng()
+        self.unit.rng()
+        arr = np.random.random(size=self.size.value)*(self.ub - self.lb) + self.lb
+        arr *= self.unit.conversion_factor
+        arr = prec_round(arr, self.precision)
+        del self.value
+        self.value = Quantity(arr, self.unit.value)
+
+    def __str__(self):
+        return str(np.array(self.value,copy=False))
 
 #greek_lower = 'alpha','beta','gamma','delta',
 #greek_upper = 'Gamma','Delta'
@@ -186,6 +233,9 @@ class ConstantVariable():
         return str(self.value)
 
 class ConstantInteger(ConstantVariable):
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
     def rng(self):
         return None
 
@@ -205,21 +255,6 @@ class ConstantFloat(ConstantVariable):
         self.value = prec_round(value,precision=self.precision)
         return None
 
-class RandomSize():
-    def __init__(self,
-            size):
-        self.size = size
-
-    def rng(self):
-        value = self.size
-        if type(self.size) is tuple:
-            if type(self.size[0]) is tuple:
-                #value = tuple(r.choice(x for x in self.size))
-                x = []
-                for tup in self.size:
-                    x.append( r.choice(tup) )
-                value = tuple(x)
-        self.value = value
 
 class RandomVariable():
     def __init__(self,
@@ -227,7 +262,7 @@ class RandomVariable():
             lb,
             ub,
             size=None,
-            unit=RandomUnit(('',))):
+            unit=ConstantUnit('')):
         self.name = name
         self.lb = lb
         self.ub = ub
@@ -237,6 +272,17 @@ class RandomVariable():
         return str(self.value)
 
 class RandomInteger(RandomVariable):
+    def __init__(self,
+            name,
+            lb,
+            ub,
+            size=None):
+        self.size = RandomSize(size)
+        self.name = name
+        self.lb = lb
+        self.ub = ub
+        self.rng()
+
     def rng(self):
         self.size.rng()
         self.value = r.randint(self.lb, self.ub, size=self.size.value)
@@ -265,8 +311,17 @@ class RandomFloat(RandomVariable):
         return None
 
 if __name__ == '__main__':
-    ru = RandomUnit.from_unit_dimensionality('kg*m^2*s^-2')
-    print(ru.value)
-    print(ru.unit_set)
-    ru.rng()
-    print(ru.value)
+    #ru = RandomUnit.from_unit_dimensionality('kg*m^2*s^-2')
+    #print(ru.value)
+    #print(ru.unit_set)
+    #ru.rng()
+    #print(ru.value)
+    #print(ru.conversion_factor)
+
+    rsize = RandomSize( ((3,4),) )
+    runit = RandomUnit(['kg/m','lb/ft','g/cm'])
+    rq = RandomQuantity('rq',2,5,rsize,runit,3)
+    res = rq.value*rq.value
+    print(res)
+    rq2 = ConstantFloat('a', rq)
+    print(rq2.value)

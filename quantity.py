@@ -6,6 +6,7 @@ from unitparse import (eval_units as unit_parse,
                       linadd as d_add, 
                       linsubtract as d_sub, 
                       linscale as d_scale)
+from utils import prec_round
 
 class UnknownUnitError(KeyError):
     def __init__(self,msg):
@@ -164,6 +165,22 @@ def fail_for_dimension_mismatch(obj1, obj2=None, error_message=None,
         else:
             return None, None
 
+def eval_dimension(units):
+    dimension = np.zeros(7)
+    try:
+        for k, v in units.items():
+            dimension += np.array(dims[k])*v
+        return dimension
+    except UnknownUnitError as e:
+        raise UnknownUnitError(f'passed unit string {units} has unknown unit: {e}')
+
+def eval_conversion_factor(units):
+    factor = 1
+    for k, v in units.items():
+        factor *= conv[k]**v
+    return factor
+
+
 class Quantity(ndarray):
     def __new__(cls, arr, units, copy=False):
 
@@ -175,40 +192,26 @@ class Quantity(ndarray):
         subarr.units = units
 
         try:
-            subarr._eval_dimension(units)
+            eval_dimension(units)
         except UnknownUnitError as e:
-            # get context and pass to UnknownUnitError
-            print(f'passed unit string {units} has unknown unit: {e}')
+            raise UnknownUnitError(f'passed unit string {units} has unknown unit: {e}')
 
         return subarr
 
     @property
     def dimension(self):
-        return self._eval_dimension(self.units)
+        return eval_dimension(self.units)
 
     @property
     def dim(self):
         return self.dimension
 
-    def _eval_dimension(self,units):
-        dimension = np.zeros(7)
-        try:
-            for k, v in self.units.items():
-                dimension += np.array(dims[k])*v
-            return dimension
-        except UnknownUnitError as e:
-            # get context and pass to UnknownUnitError
-            print(f'passed unit string {unit_str} has unknown unit: {e}')
-            print(e)
-
-    def _eval_conversion_factor(self,units):
-        factor = 1
-        for k, v in self.units.items():
-            factor *= conv[k]**v
-        return factor
+    @property
+    def conversion_factor(self):
+        return eval_conversion_factor(self.units)
 
     def convert_to_SI(self):
-        self *= self._eval_conversion_factor(self.units)
+        self *= self.conversion_factor
         d = self.dimension
         self.units = {'kg':d[0],
                       'm':d[1],
@@ -224,15 +227,13 @@ class Quantity(ndarray):
             other_units = unit_parse(other_units) 
             
         try:
-            assert (self._eval_dimension(other_units) == self.dimension).all()
+            assert (eval_dimension(other_units) == self.dimension).all()
         except AssertionError:
             raise DimensionMismatchError
 
-        self *= self._eval_conversion_factor(other_units)/self._eval_conversion_factor(self.units)
+        self *= eval_conversion_factor(self.units)/eval_conversion_factor(other_units)
         self.units = other_units
         return self
-
-
 
     #### ARITHMETIC #### (this is all copied from brian2)
     def _binary_operation(self, other, operation,
@@ -270,9 +271,6 @@ class Quantity(ndarray):
             other_arr = np.array(other, copy=False)
             result = operation(self_arr, other_arr)
             return Quantity(result, newunits)
-
-    #d_add and d_sub are functions for adding and subtracting dictionaries
-    #d_scale, used in power, just scales the factor of entries in the dictionary the same amount
 
     def __mul__(self, other):
         return self._binary_operation(other, operator.mul, d_add)
@@ -356,7 +354,7 @@ class Quantity(ndarray):
                                         base=self, exponent=other)
             other = np.array(other, copy=False)
             return Quantity(np.array(self, copy=False)**other,
-                            d_scale(self.dim, other))
+                            d_scale(self.units, other))
         else:
             return NotImplemented
 
@@ -402,9 +400,7 @@ class Quantity(ndarray):
     def __str__(self):
         fmted_val = ",".join(f"{x:.2f}" for x in self.tolist())
         fmted_uni = '*'.join(f'{k}^{v}' for k, v in self.units.items() if abs(v) > 0)
-
         return f'({fmted_val}) {fmted_uni}'
-
 
 if __name__ == '__main__':
     q = Quantity([1,2,3], 'kg/m/ft')
@@ -414,7 +410,8 @@ if __name__ == '__main__':
     print(q)
     q /= Quantity([2.35], 'kg')
     print(q)
-    q **= 2
+    #q **= 2
+    q = q**2
     print(q)
     q = q + q
     print(q)
