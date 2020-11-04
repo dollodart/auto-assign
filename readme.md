@@ -53,28 +53,29 @@ brian2.units.fundamentalunits module at 2491. The differential equation
 solutions are, when not explicit solvers (next matrix is matrix
 multiplication on previous matrix), from the GNU scientific library.
 
-To use these classes, it is just a matter of defining subclasses
-which have randomization methods. What is done here is a simpler
-implementation of the brian2 quantity in which units are dictionaries
-and dimensions are 7 element numpy arrays, and unit conversions are
-achieved just by using a reference dictionary of units. Since brian2 has
-actually little unit support, only metric prefixes on SI units, the unit
-registry from python-quantities is used.
+To use these classes, it is just a matter of defining subclasses or
+composite objects which have randomization methods. What is done here
+is a simpler implementation of the brian2 quantity in which units
+are dictionaries and dimensions are 7 element numpy arrays, and unit
+conversions are achieved just by using a reference dictionary of
+units. Since brian2 has little unit support, only metric prefixes on SI
+units, the unit registry from python-quantities is used.
 
 # TODOs
 
-- Integrate better the quantities.Quantity package (prime factorizing an
-eval output is a silly way to determine dimensionality)
-- Refactor objects to be subclasses of ndarray, possibly subclasses in
-some cases of quantities.Quantity
 - Refactor objects to remove redundancies and unnecessary
-classes. Possibly create a universal Quantity object that infers
-float/integer and randomization by datastructures passed to keyword
-arguments
+classes. In particular Constant quantities may not be needed for solver outputs.
 - Improve automatic white space creation, tex primitives/latex macros or
 document layout package geometry
 - Support HTML output with hidden identifiers of correct/incorrect
 solution, possible javascript output for evaluation
+- Support 2-D arrays for quantities 
+- As seen in the below discussion on templating, it isn't clear that the
+given "general markdown" method is satisfactory. One problem is that one
+cannot nest mathematical environments in LaTeX, so either the templating
+enging has to be aware of that and change delimiters for substituted
+values, or the user has to be TeX aware and use the amsmath \text macro
+to allow regular and mathematical text nesting.
 
 ## Why not dispatch table the solutions functions and use a text based database format for all other data?
 
@@ -135,10 +136,10 @@ e.g.,
 #end if
 ```
 
-But already there are markup converters. The second motivation,
-standing alone, is weak because it is possible to parse the problem
-statements from the templates provided they exist. Finally, Tex is
-the best mother-format, since it has the richest selection of in-line
-mathematical typesetting--nothing else comes close and web renderes just
-borrow Tex formatting with a javascript package MathJax, which has only
-a subset of available macros such as those of amsmath.
+But already there are markup converters. The second motivation, standing
+alone, is weak because it is possible to parse the problem statements
+from the templates provided they exist. Finally, Tex is the best native
+format, since it has the richest selection of in-line mathematical
+typesetting--web renderes just borrow Tex formatting with a javascript
+package MathJax, which has only a subset of available macros such as
+those of amsmath.
