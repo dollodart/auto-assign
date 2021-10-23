@@ -59,11 +59,41 @@ def test_ConstantFloat():
     rq2 = ConstantFloat('a', 2350)
     print(rq2.value)
 
+from quantity import Quantity, DimensionMismatchError
+
+def test_Quantity():
+    print('Quantity test')
+    print('multiplication (square) of kg/m/ft')
+    q = Quantity([1,2,3], 'kg/m/ft')
+    q *= q
+    print(q)
+    q = q.convert_to_SI()
+    print('convert to SI unit result')
+    print(q)
+    q /= Quantity([2.35], 'kg')
+    print('divide by kilogram result')
+    print(q)
+    #q **= 2
+    q = q**2
+    print('square result')
+    print(q)
+    q = q + q
+    print('addition result')
+    print(q)
+    q = q - 0
+    try:
+        q = q - 1
+    except DimensionMismatchError as e:
+        print(f'caught a {type(e)}')
+        print(e)
+
 if __name__ == '__main__':
     #test_all_assignments()
     #test_all_problems()
     #test_all_output2latex()
     
-    test_RandomUnit()
-    test_RandomQuantity()
-    test_ConstantFloat()
+    #test_RandomUnit()
+    #test_RandomQuantity()
+    #test_ConstantFloat()
+
+    test_Quantity()
