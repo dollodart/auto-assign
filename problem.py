@@ -166,6 +166,7 @@ class RandomUnit():
 
         try:
             d = eval_dimension(eval_units(unit))
+            d = tuple(d)
             d = dim[d]
         except KeyError:
             pass
@@ -335,19 +336,3 @@ class RandomQuantity(RandomVariable):
     def __str__(self):
         return str(np.array(self.value,copy=False))
 
-
-if __name__ == '__main__':
-    #ru = RandomUnit.from_unit_dimensionality('kg*m^2*s^-2')
-    #print(ru.value)
-    #print(ru.unit_set)
-    #ru.rng()
-    #print(ru.value)
-    #print(ru.conversion_factor)
-
-    rsize = RandomSize( ((3,4),) )
-    runit = RandomUnit(['kg/m','lb/ft','g/cm'])
-    rq = RandomQuantity('rq',2,5,rsize,runit,3)
-    res = rq.value*rq.value
-    print(res)
-    rq2 = ConstantFloat('a', rq)
-    print(rq2.value)

@@ -143,34 +143,3 @@ def eval_units(s):
     if type(r) is str:
         return {r:1}
     return r
-
-if __name__ == "__main__":
-    def test(s):
-        exprStack[:] = []
-        try:
-            results = BNF().parseString(s, parseAll=True)
-            print(results)
-            val = evaluate_stack(exprStack[:])
-        except ParseException as pe:
-            print(s, "failed parse:", str(pe))
-        else:
-            print(val)
-
-    #test('kg*m/s^2')
-    #test('(kg/m)*(m/s)')
-    #test('(kg^-1/m)*(s/m^-1)')
-    #test('(kg*m)^1.5/s')
-
-    st = '(kg/m/ft)*(Btu^2)^3' # Btu^2^3 evals to Btu^8
-    # since calculator has right associative power and evals 2^3=8 first
-    st = '(kg/m/ft)*Btu^2^3'
-    f = eval_units(st)
-    #print(st)
-    print(f,type(f))
-
-    #l = [0]*7
-    #from unit import dim
-    #for k, v in f.items():
-    #    d = tuple(x*v for x in dim[k])
-    #    l = [l[i] + d[i] for i in range(len(d))]
-    #print(l)

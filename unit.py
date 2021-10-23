@@ -30,3 +30,7 @@ for k, v in dim.items():
     if v not in idim.keys():
         idim[v] = []
     idim[v].append(k)
+
+# for hashable types
+for k in idim:
+    idim[k] = tuple(idim[k])

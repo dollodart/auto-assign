@@ -401,23 +401,3 @@ class Quantity(ndarray):
         fmted_val = ",".join(f"{x:.2f}" for x in self.tolist())
         fmted_uni = '*'.join(f'{k}^{v}' for k, v in self.units.items() if abs(v) > 0)
         return f'({fmted_val}) {fmted_uni}'
-
-if __name__ == '__main__':
-    q = Quantity([1,2,3], 'kg/m/ft')
-    q *= q
-    print(q)
-    q = q.convert_to_SI()
-    print(q)
-    q /= Quantity([2.35], 'kg')
-    print(q)
-    #q **= 2
-    q = q**2
-    print(q)
-    q = q + q
-    print(q)
-    q = q - 0
-    try:
-        q = q - 1
-    except Exception:
-        print('caught a dimensional inconsistency')
-
