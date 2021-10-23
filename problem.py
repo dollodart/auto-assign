@@ -201,40 +201,55 @@ class RandomSymbol():
 class ConstantVariable():
     def __init__(self,
             name,
-            value,
-            unit=ConstantUnit('')):
+            value):
         self.name = name
         self.value = value
-        self.unit = unit
+
+    def rng(self):
+        return None
 
     def __str__(self):
-        return str(self.value)
+        try:
+            if len(self.value) == 0:
+                return '\\null'
+            elif len(self.value) == 1:
+                return str(self.value[0])
+            else:
+                return str(self.value)
+        except TypeError: # in case of integer or float
+            return str(self.value)
+
+class ConstantQuantity(ConstantVariable):
+    def __init__(self,
+            name,
+            value,
+            size,
+            precision,
+            unit=ConstantUnit('')):
+        super().__init__(name, value, size)
+        self.precision = precision
+        self.unit = unit
+        self.value = Quantity(self.value, self.unit.value)
+
+    def rng(self): 
+        # if you put in a random unit, you may still want to randomize the unit
+        self.unit.rng()
+        value = self.value * self.unit.conversion_factor
+        value = prec_round(value, self.precision)
+        self.value = Quantity(value, self.unit.value)
 
 class ConstantInteger(ConstantVariable):
     def __init__(self, name, value):
-        self.name = name
-        self.value = value
-    def rng(self):
-        return None
+        super().__init__(name, value)
 
 class ConstantFloat(ConstantVariable):
     def __init__(self,
             name,
-            svalue,
-            precision=3,
-            unit=ConstantUnit('')):
-        super().__init__(name,svalue,unit) 
+            value,
+            precision=3):
+        super().__init__(name,value,unit) 
         self.precision = precision
-        self.svalue = svalue
-        
-    def rng(self):
-        self.unit.rng() 
-        value = self.svalue*self.unit.conversion_factor
-        self.value = prec_round(value,precision=self.precision)
-        return None
-
-# TODO: ConstantQuantity
-# TODO: ConstantSize
+        self.value = prec_round(value, self.precision)
 
 class RandomVariable():
     def __init__(self,
@@ -297,18 +312,13 @@ class RandomFloat(RandomVariable):
             ub,
             size=None,
             precision=3,
-            unit=ConstantUnit(''),
             log_uniform=False):
         super().__init__(name,lb,ub,size,log_uniform)
-        self.precision = precision
         self.unit = unit
 
     def rng(self):
         super().rng()
-        self.unit.rng()
-        value = self.value*self.unit.conversion_factor
         self.value = prec_round(value, precision=self.precision)
-        return None
 
 class RandomQuantity(RandomVariable):
     """
@@ -320,7 +330,7 @@ class RandomQuantity(RandomVariable):
 
     """
 
-    def __init__(self, name, lb, ub, size=RandomSize((1,)), unit=ConstantUnit(''), precision=14, log_uniform=False):
+    def __init__(self, name, lb, ub, size=ConstantSize(1), unit=ConstantUnit(''), precision=14, log_uniform=False):
         super().__init__(name, lb, ub, size, log_uniform)
         self.unit = unit
         self.precision = precision
