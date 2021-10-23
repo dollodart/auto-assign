@@ -217,7 +217,6 @@ class ConstantVariable():
         if self.size.value == 0:
             return '\\null'
         elif self.size.value == 1:
-            print('value is', self.value)
             return str(self.value[0])
         else:
             return str(self.value)
