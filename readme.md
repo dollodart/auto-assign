@@ -61,6 +61,10 @@ conversions are achieved just by using a reference dictionary of
 units. Since brian2 has little unit support, only metric prefixes on SI
 units, the unit registry from python-quantities is used.
 
+In fact, I found another package, ChemPy by Bjorn Dahlgren, that defines
+an ArithmeticDict which is very similar to the solution given here for
+dealing with quantities.
+
 # TODOs
 
 - Refactor objects to remove redundancies and unnecessary
@@ -136,10 +140,23 @@ e.g.,
 #end if
 ```
 
-But already there are markup converters. The second motivation, standing
-alone, is weak because it is possible to parse the problem statements
-from the templates provided they exist. Finally, Tex is the best native
-format, since it has the richest selection of in-line mathematical
-typesetting--web renderes just borrow Tex formatting with a javascript
-package MathJax, which has only a subset of available macros such as
-those of amsmath.
+But already there are markup converters. The second motivation, standing alone,
+is weak because it is possible to parse the problem statements from the
+templates provided they exist. Finally, Tex is the best native format, since it
+has the richest selection of in-line mathematical typesetting--web renderes
+just borrow Tex formatting with a javascript package MathJax, which has only a
+subset of macros available in LaTeX distributions, though the most often used
+and important ones in amsmath.
+
+# Other references
+
+I found that E.L.F. Software, ran by John Kormylo, developed batch creation of
+mathematics worksheets similar to this. Because it only uses TeX/LaTeX, it is
+far less general.
+
+# TODOs
+
+- Make a consistent class structure and polymorphism for random and constant objects
+- Consistently define dimensions as either mutable arrays or immutable tuples.
+  some of the Quantity methods require them to be mutable arrays but to use
+  them as hashable objects in a dictionary requires them to be immutable tuples
