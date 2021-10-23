@@ -122,6 +122,15 @@ class RandomSize():
                 value = tuple(x)
         self.value = value
 
+class ConstantSize():
+    def __init__(self,
+            size):
+        self.size = size
+        self.value = self.size
+
+    def rng(self):
+        return None
+
 class ConstantUnit():
     def __init__(self,
             unit,
@@ -239,7 +248,7 @@ class RandomVariable():
         if type(size) is tuple:
             self.size = RandomSize(size)
         elif size is None:
-            self.size = RandomSize((1,))
+            self.size = ConstantSize(1)
         else:
             self.size = size # already a RandomSize or other Size object
         self.log_uniform = log_uniform
