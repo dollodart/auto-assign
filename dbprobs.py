@@ -1,6 +1,9 @@
-from problem import Assignment, Problem, RandomFloat,\
-        RandomInteger, ConstantFloat, ConstantInteger,\
-        RandomUnit, ConstantUnit, RandomSymbol, RandomQuantity
+from problem import Assignment, Problem,\
+        RandomFloat, ConstantFloat,\
+        RandomInteger, ConstantInteger,\
+        RandomUnit, ConstantUnit,\
+        RandomSymbol,\
+        RandomQuantity, ConstantQuantity
 
 def solver(x,y):
     return ConstantInteger('w',x.value + y.value),
@@ -93,7 +96,7 @@ LENGTH = (0, 1, 0, 0, 0, 0, 0)
 def solver(t,g):
     x = g.value*t.value**2/2
     assert (x.dimension == LENGTH).all()
-    return ConstantFloat('x',np.array(x),unit=RandomUnit(('ft','m'))),
+    return ConstantQuantity('x',np.array(x),unit=RandomUnit(('ft','m'))),
 
 P07 = Problem(title = 'Acceleration for an Object Starting at Rest',
         statement = 'An object is released from rest from someones hand at the top of a building.' 

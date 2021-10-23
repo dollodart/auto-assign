@@ -204,35 +204,38 @@ class ConstantVariable():
             value):
         self.name = name
         self.value = value
+        try:
+            self.size = ConstantSize(len(self.value))
+        except TypeError:
+            self.size = ConstantSize(1)
+            self.value = np.array([self.value])
 
     def rng(self):
         return None
 
     def __str__(self):
-        try:
-            if len(self.value) == 0:
-                return '\\null'
-            elif len(self.value) == 1:
-                return str(self.value[0])
-            else:
-                return str(self.value)
-        except TypeError: # in case of integer or float
+        if self.size.value == 0:
+            return '\\null'
+        elif self.size.value == 1:
+            return str(self.value[0])
+        else:
             return str(self.value)
 
 class ConstantQuantity(ConstantVariable):
     def __init__(self,
             name,
             value,
-            size,
-            precision,
+            precision=3,
             unit=ConstantUnit('')):
-        super().__init__(name, value, size)
+
+        super().__init__(name, value)
         self.precision = precision
         self.unit = unit
         self.value = Quantity(self.value, self.unit.value)
 
     def rng(self): 
         # if you put in a random unit, you may still want to randomize the unit
+        # this is the only randomization among ConstantX classes
         self.unit.rng()
         value = self.value * self.unit.conversion_factor
         value = prec_round(value, self.precision)
@@ -247,7 +250,7 @@ class ConstantFloat(ConstantVariable):
             name,
             value,
             precision=3):
-        super().__init__(name,value,unit) 
+        super().__init__(name, value) 
         self.precision = precision
         self.value = prec_round(value, self.precision)
 
