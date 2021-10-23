@@ -240,6 +240,14 @@ class ConstantQuantity(ConstantVariable):
         value = prec_round(value, self.precision)
         self.value = Quantity(value, self.unit.value)
 
+    def __str__(self):
+        if len(self.value) == 0:
+            return '\\null'
+        elif len(self.value) == 1:
+            return str(self.value[0])
+        else:
+            return str(np.array(self.value,copy=False))
+
 class ConstantInteger(ConstantVariable):
     def __init__(self, name, value):
         super().__init__(name, value)
@@ -350,5 +358,9 @@ class RandomQuantity(RandomVariable):
         self.value = Quantity(value, self.unit.value)
 
     def __str__(self):
-        return str(np.array(self.value,copy=False))
-
+        if len(self.value) == 0:
+            return '\\null'
+        elif len(self.value) == 1:
+            return str(self.value[0])
+        else:
+            return str(np.array(self.value,copy=False))
