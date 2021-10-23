@@ -122,7 +122,7 @@ P09 = Problem(title = 'Complete the square',
         solver=solver,
         solution = 'The answer is $$({x}-\\frac 32 {y} )^{{2}} - \\frac 34 {y}^2 \,.$$'
         )
-#A01 = Assignment( (P01,P02,P03,P04), title='Arithmetic Operations')
-#A01 = Assignment( (P05,P06), title='Several Arithmetic Operations')
-A01 = Assignment( (P07, ), title='Kinematics')
-#A01 = Assignment( (P09, ), title='Algebra')
+A01 = Assignment( (P01,P02,P03,P04), title='Arithmetic Operations')
+A02 = Assignment( (P05,P06), title='Several Arithmetic Operations')
+A03 = Assignment( (P07, ), title='Kinematics')
+A04 = Assignment( (P09, ), title='Algebra')

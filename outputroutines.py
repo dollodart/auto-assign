@@ -1,5 +1,4 @@
 import subprocess
-import numpy as np
 from Cheetah.Template import Template
 
 with open('template.cheetah','r') as _:
@@ -8,8 +7,8 @@ with open('template.cheetah','r') as _:
 def output2latex(assignment, number_students):
     names = []
     for n in range(number_students): # number of students
-        name_a = f'out/id-{n}.tex'
-        name_s = f'out/soln-id-{n}.tex'
+        name_a = f'out/{assignment.title.replace(" ","-").lower()}-id-{n}.tex'
+        name_s = f'out/soln-{assignment.title.replace(" ","-").lower()}-id-{n}.tex'
         st_a = ''
         st_s = ''
         for prob in assignment.subset:
@@ -42,9 +41,3 @@ def latex2pdf(filenames):
 def output2pdf(assignment, number_students):
     filenames = output2latex(assignment, number_students)
     latex2pdf(filenames)
-
-if __name__ == '__main__':
-    from dbprobs import A01
-    # randomly generate possible subset of problems
-    A01.rng(len(A01)) 
-    output2pdf(A01, 1)
