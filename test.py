@@ -1,6 +1,7 @@
 import dbprobs
 from outputroutines import output2latex, output2pdf
 from problem import Problem, Assignment
+
 d = dbprobs.__dict__
 
 # generic test on all problems 
@@ -87,6 +88,44 @@ def test_Quantity():
         print(f'caught a {type(e)}')
         print(e)
 
+from unitparse import exprStack, BNF, evaluate_stack, ParseException
+
+def test_unitparse():
+
+    def test(s):
+        exprStack[:] = []
+        try:
+            results = BNF().parseString(s, parseAll=True)
+            return results
+            val = evaluate_stack(exprStack[:])
+        except ParseException as pe:
+            return (s, "failed parse:", str(pe))
+        else:
+            return (val)
+
+    for string in ('kg*m/s^2',
+                   '(kg/m)*(m/s)',
+                   '(kg^-1/m)*(s/m^-1)',
+                   '(kg*m)^1.5/s'):
+        print(string, test(string))
+
+from unit import dim
+def test_unit():
+
+    print('testing right associative operator')
+    for string in ('(kg/m/ft)*(BTU^2)^3', '(kg/m/ft)*BTU^2^3'):
+        # BTU^2^3 evals to BTU^8
+        # since calculator has right associative power and evals 2^3=8 first
+        f = eval_units(string)
+        print(string, f)
+
+    print('testing convert to dimensionality')
+    l = [0]*7
+    for k, v in f.items():
+        d = tuple(x*v for x in dim[k])
+        l = [l[i] + d[i] for i in range(len(d))]
+    print(l)
+
 if __name__ == '__main__':
     #test_all_assignments()
     #test_all_problems()
@@ -96,4 +135,8 @@ if __name__ == '__main__':
     #test_RandomQuantity()
     #test_ConstantFloat()
 
-    test_Quantity()
+    #test_Quantity()
+
+    #test_unitparse()
+
+    test_unit()
