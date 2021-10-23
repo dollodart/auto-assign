@@ -208,7 +208,7 @@ class ConstantVariable():
             self.size = ConstantSize(len(self.value))
         except TypeError:
             self.size = ConstantSize(1)
-            self.value = np.array([self.value])
+            self.value = np.array((self.value,))
 
     def rng(self):
         return None
@@ -217,6 +217,7 @@ class ConstantVariable():
         if self.size.value == 0:
             return '\\null'
         elif self.size.value == 1:
+            print('value is', self.value)
             return str(self.value[0])
         else:
             return str(self.value)
@@ -252,7 +253,7 @@ class ConstantFloat(ConstantVariable):
             precision=3):
         super().__init__(name, value) 
         self.precision = precision
-        self.value = prec_round(value, self.precision)
+        self.value = prec_round(self.value, self.precision)
 
 class RandomVariable():
     def __init__(self,
@@ -320,11 +321,12 @@ class RandomFloat(RandomVariable):
             precision=3,
             log_uniform=False):
         super().__init__(name,lb,ub,size,log_uniform)
-        self.unit = unit
+        self.precision = precision
+        self.rng()
 
     def rng(self):
         super().rng()
-        self.value = prec_round(value, precision=self.precision)
+        self.value = prec_round(self.value, precision=self.precision)
 
 class RandomQuantity(RandomVariable):
     """

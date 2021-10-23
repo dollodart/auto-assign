@@ -126,17 +126,25 @@ def test_unit():
         l = [l[i] + d[i] for i in range(len(d))]
     print(l)
 
+def test_str():
+    for v in (1, [1], [1, 2]):
+        print(v, ConstantFloat('', v), end='\n\n')
+    for v in ((1, 2, None), (1, 2, ConstantSize(1)), (1, 2, ConstantSize(2))):
+        print(v, RandomFloat('', v[0], v[1], size=v[2]),end='\n\n') 
+
 if __name__ == '__main__':
-    test_all_assignments()
-    test_all_problems()
-    test_all_output2latex()
-    
-    test_RandomUnit()
-    test_RandomQuantity()
-    test_ConstantFloat()
+#    test_all_assignments()
+#    test_all_problems()
+#    test_all_output2latex()
+#    
+#    test_RandomUnit()
+#    test_RandomQuantity()
+#    test_ConstantFloat()
+#
+#    test_Quantity()
+#
+#    test_unitparse()
+#
+#    test_unit()
 
-    test_Quantity()
-
-    test_unitparse()
-
-    test_unit()
+    test_str()
