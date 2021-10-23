@@ -131,7 +131,11 @@ class ConstantSize():
     def rng(self):
         return None
 
-class ConstantUnit():
+class Unit():
+    def __str__(self):
+        return '*'.join(f'{k}({v})' for k, v in self.value.items() if abs(v) > 0)
+
+class ConstantUnit(Unit):
     def __init__(self,
             unit,
             dimensionality=None):
@@ -143,10 +147,8 @@ class ConstantUnit():
             self.dimensionality = eval_dimension(self.value)
     def rng(self):
         return None
-    def __str__(self):
-        return '*'.join(f'{k}({v})' for k, v in self.value.items() if abs(v) > 0)
 
-class RandomUnit(): 
+class RandomUnit(Unit):
     """ 
     Units should be an iterable, not a set data
     structure (e.g., tuple or list).  The first unit in the provided
@@ -179,10 +181,6 @@ class RandomUnit():
         self.value = r.choice(self.unit_set)
         self.conversion_factor = eval_conversion_factor(self.unit_set[0])/eval_conversion_factor(self.value)
         # from, to convention
-
-    def __str__(self):
-        return '*'.join(f'{k}({v})' for k, v in self.value.items() if abs(v) > 0)
-
 
 #greek_lower = 'alpha','beta','gamma','delta',
 #greek_upper = 'Gamma','Delta'
