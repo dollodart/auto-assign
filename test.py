@@ -127,16 +127,16 @@ def test_unit():
     print(l)
 
 if __name__ == '__main__':
-    #test_all_assignments()
-    #test_all_problems()
-    #test_all_output2latex()
+    test_all_assignments()
+    test_all_problems()
+    test_all_output2latex()
     
-    #test_RandomUnit()
-    #test_RandomQuantity()
-    #test_ConstantFloat()
+    test_RandomUnit()
+    test_RandomQuantity()
+    test_ConstantFloat()
 
-    #test_Quantity()
+    test_Quantity()
 
-    #test_unitparse()
+    test_unitparse()
 
     test_unit()
