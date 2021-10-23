@@ -245,7 +245,12 @@ class RandomVariable():
         self.log_uniform = log_uniform
 
     def __str__(self):
-        return str(self.value)
+        if len(self.value) == 0:
+            return '\\null'
+        elif len(self.value) == 1:
+            return str(self.value[0])
+        else:
+            return str(self.value)
 
     def lin_rng(self):
         return r.random(size=self.size.value)*(self.ub - self.lb) + self.lb
