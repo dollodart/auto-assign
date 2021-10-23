@@ -174,38 +174,6 @@ class RandomUnit():
         return '*'.join(f'{k}({v})' for k, v in self.value.items() if abs(v) > 0)
 
 
-class RandomQuantity:
-    """
-
-    It is difficult to implement RandomQuantitty as something other
-    than a composite object which makes new instances of quantity on
-    randomization if you want to support variable array sizes, since
-    numpy arrays do not support element addition and subtraction well.
-
-    """
-
-    def __init__(self, name, lb, ub, size=RandomSize((1,)), unit=ConstantUnit(''), precision=14):
-        self.name = name
-        self.value = [] # will be deleted in rng
-        self.size = size
-        self.unit = unit
-        self.precision = precision
-        self.lb = lb
-        self.ub = ub
-        self.rng()
-
-    def rng(self):
-        self.size.rng()
-        self.unit.rng()
-        arr = np.random.random(size=self.size.value)*(self.ub - self.lb) + self.lb
-        arr *= self.unit.conversion_factor
-        arr = prec_round(arr, self.precision)
-        del self.value
-        self.value = Quantity(arr, self.unit.value)
-
-    def __str__(self):
-        return str(np.array(self.value,copy=False))
-
 #greek_lower = 'alpha','beta','gamma','delta',
 #greek_upper = 'Gamma','Delta'
 class RandomSymbol():
@@ -255,6 +223,8 @@ class ConstantFloat(ConstantVariable):
         self.value = prec_round(value,precision=self.precision)
         return None
 
+# TODO: ConstantQuantity
+# TODO: ConstantSize
 
 class RandomVariable():
     def __init__(self,
@@ -262,31 +232,48 @@ class RandomVariable():
             lb,
             ub,
             size=None,
-            unit=ConstantUnit('')):
+            log_uniform = False):
         self.name = name
         self.lb = lb
         self.ub = ub
-        self.size = RandomSize(size)
+        if type(size) is tuple:
+            self.size = RandomSize(size)
+        elif size is None:
+            self.size = RandomSize((1,))
+        else:
+            self.size = size # already a RandomSize or other Size object
+        self.log_uniform = log_uniform
 
     def __str__(self):
         return str(self.value)
+
+    def lin_rng(self):
+        return r.random(size=self.size.value)*(self.ub - self.lb) + self.lb
+
+    def log_rng(self):
+        return np.exp(r.random(size=self.size.value)*(np.log(self.ub) - np.log(self.lb)) + np.log(self.lb))
+
+    def rng(self):
+        self.size.rng()
+        if self.log_uniform:
+            self.value = self.lin_rng()
+        else:
+            self.value = self.log_rng()
+
 
 class RandomInteger(RandomVariable):
     def __init__(self,
             name,
             lb,
             ub,
-            size=None):
-        self.size = RandomSize(size)
-        self.name = name
-        self.lb = lb
-        self.ub = ub
+            size=None,
+            log_uniform=False):
+        super().__init__(name, lb, ub, size, log_uniform)
         self.rng()
 
     def rng(self):
-        self.size.rng()
-        self.value = r.randint(self.lb, self.ub, size=self.size.value)
-        return None
+        super().rng()
+        self.value = np.round(self.value).astype('int64')
 
 class RandomFloat(RandomVariable):
     def __init__(self,
@@ -295,20 +282,45 @@ class RandomFloat(RandomVariable):
             ub,
             size=None,
             precision=3,
-            unit=ConstantUnit('')):
-        super().__init__(name,lb,ub,size,unit=unit)
+            unit=ConstantUnit(''),
+            log_uniform=False):
+        super().__init__(name,lb,ub,size,log_uniform)
         self.precision = precision
         self.unit = unit
 
     def rng(self):
+        super().rng()
         self.unit.rng()
-        self.size.rng()
-        value = r.random(size=self.size.value)
-        value *= self.ub - self.lb
-        value += self.lb
-        value = value*self.unit.conversion_factor
+        value = self.value*self.unit.conversion_factor
         self.value = prec_round(value, precision=self.precision)
         return None
+
+class RandomQuantity(RandomVariable):
+    """
+
+    It is difficult to implement RandomQuantitty as something other
+    than a composite object which makes new instances of quantity on
+    randomization if you want to support variable array sizes, since
+    numpy arrays do not support element addition and subtraction well.
+
+    """
+
+    def __init__(self, name, lb, ub, size=RandomSize((1,)), unit=ConstantUnit(''), precision=14, log_uniform=False):
+        super().__init__(name, lb, ub, size, log_uniform)
+        self.unit = unit
+        self.precision = precision
+        self.rng()
+
+    def rng(self):
+        super().rng() # note this will set self.value to numpy array, not Quantity
+        self.unit.rng()
+        value = self.value * self.unit.conversion_factor
+        value = prec_round(value, self.precision)
+        self.value = Quantity(value, self.unit.value)
+
+    def __str__(self):
+        return str(np.array(self.value,copy=False))
+
 
 if __name__ == '__main__':
     #ru = RandomUnit.from_unit_dimensionality('kg*m^2*s^-2')
