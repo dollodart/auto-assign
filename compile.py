@@ -6,6 +6,7 @@ with open('template.cheetah','r') as _:
     tclass = Template.compile(_.read(), baseclass=dict)
 
 def output2latex(assignment, number_students):
+    names = []
     for n in range(number_students): # number of students
         name_a = f'out/id-{n}.tex'
         name_s = f'out/soln-id-{n}.tex'
@@ -30,11 +31,20 @@ def output2latex(assignment, number_students):
                     is_soln=True)
             _.write(soln.respond())
 
-        subprocess.run(['pdflatex', '-output-directory=out', name_a])
-        subprocess.run(['pdflatex', '-output-directory=out', name_s])
+    names.append(name_a)
+    names.append(name_s)
+    return names
+
+def latex2pdf(filenames):
+    for file in filenames:
+        subprocess.run(['pdflatex', '-output-directory=out', file])
+
+def output2pdf(assignment, number_students):
+    filenames = output2latex(assignment, number_students)
+    latex2pdf(filenames)
 
 if __name__ == '__main__':
     from dbprobs import A01
     # randomly generate possible subset of problems
     A01.rng(len(A01)) 
-    output2latex(A01, 1)
+    output2pdf(A01, 1)
