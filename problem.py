@@ -131,7 +131,11 @@ class ConstantSize():
     def rng(self):
         return None
 
-class ConstantUnit():
+class Unit():
+    def __str__(self):
+        return '*'.join(f'{k}({v})' for k, v in self.value.items() if abs(v) > 0)
+
+class ConstantUnit(Unit):
     def __init__(self,
             unit,
             dimensionality=None):
@@ -143,10 +147,8 @@ class ConstantUnit():
             self.dimensionality = eval_dimension(self.value)
     def rng(self):
         return None
-    def __str__(self):
-        return '*'.join(f'{k}({v})' for k, v in self.value.items() if abs(v) > 0)
 
-class RandomUnit(): 
+class RandomUnit(Unit):
     """ 
     Units should be an iterable, not a set data
     structure (e.g., tuple or list).  The first unit in the provided
@@ -180,25 +182,39 @@ class RandomUnit():
         self.conversion_factor = eval_conversion_factor(self.unit_set[0])/eval_conversion_factor(self.value)
         # from, to convention
 
-    def __str__(self):
-        return '*'.join(f'{k}({v})' for k, v in self.value.items() if abs(v) > 0)
-
-
-#greek_lower = 'alpha','beta','gamma','delta',
-#greek_upper = 'Gamma','Delta'
 class RandomSymbol():
+    #greek_lower = 'alpha','beta','gamma','delta',
+    #greek_upper = 'Gamma','Delta'
     def __init__(self,
             name,
             symbolset):
         self.name = name
         self.symbolset = symbolset
+
     def rng(self):
         self.value = r.choice(self.symbolset)
     def __str__(self):
         return self.value
 
+class Variable:
+    """
+    This is the topmost class, and is only defined as having a string
+    representation which depends on its size.  It is a valid question why there
+    are distinctions between, e.g., real and integer valued variables, but not
+    between scalars, vectors, and matrices. The answer is only because of the
+    definition of arrays (of any dimension) by numpy.
+    """
+    def __str__(self):
+        if self.size.value == 0:
+            return '\\null'
+        elif self.size.value == 1:
+            print('value is', self.value)
+            return str(self.value[0])
+        else:
+            return str(self.value)
 
-class ConstantVariable():
+
+class ConstantVariable(Variable):
     def __init__(self,
             name,
             value):
@@ -212,14 +228,6 @@ class ConstantVariable():
 
     def rng(self):
         return None
-
-    def __str__(self):
-        if self.size.value == 0:
-            return '\\null'
-        elif self.size.value == 1:
-            return str(self.value[0])
-        else:
-            return str(self.value)
 
 class ConstantQuantity(ConstantVariable):
     def __init__(self,
@@ -245,7 +253,7 @@ class ConstantInteger(ConstantVariable):
     def __init__(self, name, value):
         super().__init__(name, value)
 
-class ConstantFloat(ConstantVariable):
+class ConstantReal(ConstantVariable):
     def __init__(self,
             name,
             value,
@@ -254,7 +262,7 @@ class ConstantFloat(ConstantVariable):
         self.precision = precision
         self.value = prec_round(self.value, self.precision)
 
-class RandomVariable():
+class RandomVariable(Variable):
     def __init__(self,
             name,
             lb,
@@ -274,9 +282,9 @@ class RandomVariable():
 
     def __str__(self):
         try:
-            if len(self.size.value) == 0:
+            if self.size.value == 0:
                 return '\\null'
-            elif len(self.size.value) == 1:
+            elif self.size.value == 1:
                 return str(self.value[0])
             else:
                 return str(self.value)
@@ -292,9 +300,9 @@ class RandomVariable():
     def rng(self):
         self.size.rng()
         if self.log_uniform:
-            self.value = self.lin_rng()
-        else:
             self.value = self.log_rng()
+        else:
+            self.value = self.lin_rng()
 
 
 class RandomInteger(RandomVariable):
@@ -309,9 +317,9 @@ class RandomInteger(RandomVariable):
 
     def rng(self):
         super().rng()
-        self.value = np.round(self.value).astype('int64')
+        self.value = np.round(self.value).astype(int)
 
-class RandomFloat(RandomVariable):
+class RandomReal(RandomVariable):
     def __init__(self,
             name,
             lb,
@@ -349,7 +357,3 @@ class RandomQuantity(RandomVariable):
         value = self.value * self.unit.conversion_factor
         value = prec_round(value, self.precision)
         self.value = Quantity(value, self.unit.value)
-
-    def __str__(self):
-        return str(np.array(self.value,copy=False))
-
