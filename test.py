@@ -55,9 +55,9 @@ def test_RandomQuantity():
     res = rq.value*rq.value
     print(res)
 
-def test_ConstantFloat():
+def test_ConstantReal():
     print('constant float test')
-    rq2 = ConstantFloat('a', 2350)
+    rq2 = ConstantReal('a', 2350)
     print(rq2.value)
 
 from quantity import Quantity, DimensionMismatchError
@@ -128,23 +128,23 @@ def test_unit():
 
 def test_str():
     for v in (1, [1], [1, 2]):
-        print(v, ConstantFloat('', v), end='\n\n')
+        print(v, ConstantReal('', v), end='\n\n')
     for v in ((1, 2, None), (1, 2, ConstantSize(1)), (1, 2, ConstantSize(2))):
-        print(v, RandomFloat('', v[0], v[1], size=v[2]),end='\n\n') 
+        print(v, RandomReal('', v[0], v[1], size=v[2]),end='\n\n') 
 
 if __name__ == '__main__':
-#    test_all_assignments()
-#    test_all_problems()
-#    test_all_output2latex()
-#    
-#    test_RandomUnit()
-#    test_RandomQuantity()
-#    test_ConstantFloat()
-#
-#    test_Quantity()
-#
-#    test_unitparse()
-#
-#    test_unit()
+    test_all_assignments()
+    test_all_problems()
+    test_all_output2latex()
+    
+    test_RandomUnit()
+    test_RandomQuantity()
+    test_ConstantReal()
+
+    test_Quantity()
+
+    test_unitparse()
+
+    test_unit()
 
     test_str()
