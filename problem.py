@@ -299,9 +299,9 @@ class RandomVariable():
     def rng(self):
         self.size.rng()
         if self.log_uniform:
-            self.value = self.lin_rng()
-        else:
             self.value = self.log_rng()
+        else:
+            self.value = self.lin_rng()
 
 
 class RandomInteger(RandomVariable):
