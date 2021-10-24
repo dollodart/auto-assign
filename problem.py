@@ -252,7 +252,7 @@ class ConstantInteger(ConstantVariable):
     def __init__(self, name, value):
         super().__init__(name, value)
 
-class ConstantFloat(ConstantVariable):
+class ConstantReal(ConstantVariable):
     def __init__(self,
             name,
             value,
@@ -316,9 +316,9 @@ class RandomInteger(RandomVariable):
 
     def rng(self):
         super().rng()
-        self.value = np.round(self.value).astype('int64')
+        self.value = np.round(self.value).astype(int)
 
-class RandomFloat(RandomVariable):
+class RandomReal(RandomVariable):
     def __init__(self,
             name,
             lb,

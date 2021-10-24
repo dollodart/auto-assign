@@ -1,5 +1,5 @@
 from problem import Assignment, Problem,\
-        RandomFloat, ConstantFloat,\
+        RandomReal, ConstantReal,\
         RandomInteger, ConstantInteger,\
         RandomUnit, ConstantUnit,\
         RandomSymbol,\
@@ -48,7 +48,7 @@ P03 = Problem(title = 'Multiply Two Numbers',
         )
 
 def solver(x,y):
-    return ConstantFloat('w', x.value / y.value),
+    return ConstantReal('w', x.value / y.value),
 
 P04 = Problem(title = 'Divide Two Numbers',
         statement = 'Divide the number ${x}$ by ${y}$. '
