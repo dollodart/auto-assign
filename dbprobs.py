@@ -125,7 +125,25 @@ P09 = Problem(title = 'Complete the square',
         solver=solver,
         solution = 'The answer is $$({x}-\\frac 32 {y} )^{{2}} - \\frac 34 {y}^2 \,.$$'
         )
+
+def solver(E, G):
+    n = E.value/(2*G.value)
+    n -= 1
+    # TODO: fix so E.value/(2*G.value) - 1 doesn't raise an error
+    return ConstantQuantity('n', n, unit=ConstantUnit('GPa')),
+
+P10 = Problem(title = 'Evaluate the Poisson\'s ratio',
+        statement = 'Evaluate the Poisson\'s ratio for steel with a Young\'s modulus of ${E}$ {E.unit} and shear modulus of ${G}$ {G.unit}',
+        difficulty = 'easy',
+        points = 2,
+        inputs = (RandomQuantity('E', 190, 215, precision=3,unit=ConstantUnit('GPa')),
+            RandomQuantity('G', 62.4, 79.0, precision=3,unit=ConstantUnit('GPa'))),
+        extraneous_inputs = tuple(),
+        solver=solver,
+        solution = 'The Poisson\'s ratio is $E/(2G) - 1$ = {n}.')
+
 A01 = Assignment( (P01,P02,P03,P04), title='Arithmetic Operations')
 A02 = Assignment( (P05,P06), title='Several Arithmetic Operations')
 A03 = Assignment( (P07, ), title='Kinematics')
 A04 = Assignment( (P09, ), title='Algebra')
+A05 = Assignment( (P10, ), title='Statics')
