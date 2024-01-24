@@ -1,2 +1,0 @@
-- Make tests for all classes
-- Correct output format for length-1 arrays
