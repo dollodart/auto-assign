@@ -24,8 +24,8 @@ $arraylike
 
 #for $p in $problems
 \section{$p.title}
-Difficulty = $p.difficulty
-Number Points = $p.points
+Difficulty = $p.difficulty \\
+Number Points = $p.points \\
 \subsection{Problem}
 $p.statement.format_map({**$p.dct, **{$k + '_autofmt':$texfmt(v.value) for k,v in $p.dct.items()}})
 #if $is_soln is True
