@@ -100,7 +100,7 @@ def solver(t,g):
 
 P07 = Problem(title = 'Acceleration for an Object Starting at Rest',
         statement = 'An object is released from rest from someones hand at the top of a building.' 
-        ' Before it hits the ground, it travels {t} {t.unit}.'
+        ' Before it hits the ground, it travels ${t}$ ${t.unit}$.'
         ' How far has it traveled? The local graviational constant is ${g}$ ${g.unit}$',
         difficulty = 'easy',
         points = 2,
@@ -108,7 +108,7 @@ P07 = Problem(title = 'Acceleration for an Object Starting at Rest',
                   RandomQuantity('g',9.81,9.81,precision=3,unit=ConstantUnit('m*s^-2'))),
         extraneous_inputs = tuple(),
         solver=solver,
-        solution= 'After ${t}$ {t.unit} the object has fallen ${x}$ {x.unit}.'
+        solution= 'After ${t}$ ${t.unit}$ the object has fallen ${x}$ ${x.unit}$.'
         )
 
 def solver(x, y):
@@ -131,7 +131,7 @@ def solver(E, G):
     return ConstantQuantity('n', n, unit=ConstantUnit('GPa')),
 
 P10 = Problem(title = 'Evaluate the Poisson\'s ratio',
-        statement = 'Evaluate the Poisson\'s ratio for steel with a Young\'s modulus of ${E}$ {E.unit} and shear modulus of ${G}$ {G.unit}',
+        statement = 'Evaluate the Poisson\'s ratio for steel with a Young\'s modulus of ${E}$ ${E.unit}$ and shear modulus of ${G}$ ${G.unit}$',
         difficulty = 'easy',
         points = 2,
         inputs = (RandomQuantity('E', 190, 215, precision=3,unit=ConstantUnit('GPa')),

@@ -133,7 +133,14 @@ class ConstantSize():
 
 class Unit():
     def __str__(self):
-        return '*'.join(f'{k}({v})' for k, v in self.value.items() if abs(v) > 0)
+        l = []
+        for k, v in self.value.items():
+            if abs(v) > 0:
+                if v == 1:
+                    l.append(f'{{\\rm {k}}}')
+                else:
+                    l.append(f'{{\\rm {k}}}^{{{v}}}')
+        return '\cdot'.join(l)
 
 class ConstantUnit(Unit):
     def __init__(self,
