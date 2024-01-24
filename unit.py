@@ -5,6 +5,8 @@ r = unit_registry._UnitRegistry__Registry
 d = r._Registry__shared_state
 d = d['_Registry__context']
 
+nulldim = (0, 0, 0, 0, 0, 0, 0)
+
 dim = {}
 conv = {}
 for k, v in d.items():

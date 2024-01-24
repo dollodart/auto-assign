@@ -1,7 +1,7 @@
 from numpy import ndarray
 import numpy as np
 import operator
-from unit import dim as dims, conv, idim
+from unit import dim as dims, conv, idim, nulldim
 from unitparse import (eval_units as unit_parse, 
                       linadd as d_add, 
                       linsubtract as d_sub, 
@@ -123,7 +123,13 @@ def fail_for_dimension_mismatch(obj1, obj2=None, error_message=None,
     o1hasdim = hasattr(obj1, 'dimension')
     o2hasdim = hasattr(obj2, 'dimension')
 
-    
+    if o1hasdim and not o2hasdim:
+        #print('**', obj1.dimension, (obj1.dimension == nulldim).all(), '**') 
+        return None, None
+    if o2hasdim and not o1hasdim:
+        #print('**', obj2.dimension, (obj2.dimension == nulldim).all(), '**') 
+        return None, None
+        
     if (o1hasdim and o2hasdim) and (obj1.dim != obj2.dim).all(): # don't use None Type
         dim1 = obj1.dim
         dim2 = obj2.dim
@@ -152,15 +158,19 @@ def fail_for_dimension_mismatch(obj1, obj2=None, error_message=None,
         # If we are comparing an object to a specific unit, we don't want to
         # restate this unit (it is probably mentioned in the text already)
         if obj2 is None or isinstance(obj2, (Dimension, Unit)):
+            print(error_message, '**1**')
             raise DimensionMismatchError(error_message, dim1)
         else:
+            print(error_message, '**2**')
             raise DimensionMismatchError(error_message, dim1, dim2)
     else:
         if o1hasdim and o2hasdim:
             return obj1.dim, obj2.dim
         elif o2hasdim and obj1 != 0:
+            print(error_message, '**3**')
             raise DimensionMismatchError(error_message, obj2)
         elif o1hasdim and obj2 != 0:
+            print(error_message, '**4**')
             raise DimensionMismatchError(error_message, obj1)
         else:
             return None, None

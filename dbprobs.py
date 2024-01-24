@@ -127,9 +127,7 @@ P09 = Problem(title = 'Complete the square',
         )
 
 def solver(E, G):
-    n = E.value/(2*G.value)
-    n -= 1
-    # TODO: fix so E.value/(2*G.value) - 1 doesn't raise an error
+    n = E.value/(2*G.value) - 1
     return ConstantQuantity('n', n, unit=ConstantUnit('GPa')),
 
 P10 = Problem(title = 'Evaluate the Poisson\'s ratio',
