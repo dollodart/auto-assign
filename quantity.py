@@ -239,6 +239,10 @@ class Quantity(ndarray):
     def _binary_operation(self, other, operation,
                           unit_operation=lambda a, b: a, fail_for_mismatch=False,
                           operator_str=None, inplace=False):
+
+        if type(other) in [int, float]:
+            other = Quantity([other], dict())
+
         if fail_for_mismatch:
             if inplace:
                 message = ('Cannot calculate ... %s {value}, units do not '

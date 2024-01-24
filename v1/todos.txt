@@ -1,0 +1,10 @@
+TODO: Without using eval() on a string of characters, how can a function be defined in yaml? It may be necessary to have a separate python file which is a dictionary of functions, if it can't be evaluated in yaml. There may not be a significant advantage in using YAML.
+RES: Only alternative is to compile a python document after writing a text file, so used eval.
+
+TODO: Add support for problem subparts. This requires checking to see if the statement key has a value of string (no subparts) or another dictionary (subparts). Support interweaving statement and solution parts. It may be difficult to support arbitrary problem nesting--it is unlikely that more than 2 levels are needed, however.
+
+TODO: Allow semi-random sampling by imposing constraints such as at least an average difficulty of x and at least one qualitative problem.
+
+TODO: Eval allows for arbitrarily complicated expressions but does not allow for variable assignment. For multiline problems, or problems with local variables, which complicated solution methods such as integration might require, allow the solution to be defined as an external python function with a reference ID matching the yaml entry, and call that script to generate the solution.
+
+TODO: Allow randomization of non-numerical problem parts so long as the user supplies a randomization value and a randomizing function. For example, evaluating double integrals of polynomials by integral separation, a literal generating function for the polynomial can be made which symbolically evaluates (by numerically evaluating coefficients in an expansion and counting the order of each term) a polynomial.

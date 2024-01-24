@@ -1,0 +1,26 @@
+- id: "00000001" #to keep leading digits, format as string
+  title: Evaluating a fraction with powers
+  points: 10
+  difficulty: 1
+  statement: 'Given $\alpha = {alpha:.2f}$ and $\beta = {beta:.2f}$, evaluate $\alpha^{{2}}/\beta$.
+  Hint: $\alpha/\beta$ = {ratio:.2f}.'
+  solution: 'The expression evaluates to ${alpha:.2f}^2/{beta:.2f}={alpha:.2f}\times{alpha:.2f}/{beta:.2f}={alpha^2:.2f}/{beta:.2f}={solution:.2f}$. Consult \cite{{{ref1}}}.'
+  inputs:
+    alpha: 1
+    beta: 1
+  references: 
+    ref1: mybibtextrefname
+  evaluator: 
+    ratio: "d['alpha']/d['beta']" 
+    alpha^2: "d['alpha']**2"
+  solver:
+    solution: "d['alpha']**2/d['beta']"
+    
+- id: "0000002"
+  title: Evaluating an integral
+  points: 20
+  difficulty: 2
+  statement: 'Evaluate the integral $\int_0^1 x \, dx$.'
+  solution: '$\int_0^1 x \, dx = \frac{x^2}{2}\bigg|_0^1 = \frac 12 - 0 = \frac 12'
+  inputs:
+
